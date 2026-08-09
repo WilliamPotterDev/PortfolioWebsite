@@ -5,9 +5,9 @@ toolbarMode = "minimal"
 hideTopBar = true
 
 [theme]
-base = "dark"
-primaryColor = "#ff4b4b"
-backgroundColor = "#05080f"
-secondaryBackgroundColor = "#0b1524"
-textColor = "#e6eef8"
-font = "monospace"
+base = "light"
+primaryColor = "#6b6b6b"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f3f3f3"
+textColor = "#111111"
+font = "sans serif"

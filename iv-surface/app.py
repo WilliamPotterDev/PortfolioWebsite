@@ -20,22 +20,24 @@ st.set_page_config(
 
 
 def _apply_chrome() -> None:
-    main_bg = "linear-gradient(165deg, #05080f 0%, #0a1628 42%, #0d2137 100%)"
-    sidebar_bg = "#070c16"
-    panel_bg = "#0b1524"
-    border = "#1e3a5f"
-    text = "#e6eef8"
-    muted = "#8fa3bc"
-    shadow = "0 10px 36px rgba(0, 0, 0, 0.45)"
+    bg = "#ffffff"
+    panel = "#ffffff"
+    sidebar = "#ffffff"
+    border = "#d0d0d0"
+    text = "#111111"
+    muted = "#555555"
+    button = "#d9d9d9"
+    button_hover = "#c4c4c4"
+    input_bg = "#ffffff"
 
     st.markdown(
         f"""
         <style>
         html, body, [class*="css"], .stApp, button, input, label, p, h1, h2, h3, h4, h5, h6 {{
-            font-family: "Courier New", Courier, monospace !important;
+            font-family: Arial, Helvetica, sans-serif !important;
         }}
         .stApp {{
-            background: {main_bg};
+            background: {bg};
             color: {text};
         }}
         .block-container {{
@@ -48,43 +50,40 @@ def _apply_chrome() -> None:
         }}
         h1 {{
             font-weight: 600 !important;
-            letter-spacing: -0.02em;
-            font-size: 1.65rem !important;
+            letter-spacing: 0;
+            font-size: 1.55rem !important;
             margin-bottom: 0.25rem !important;
             color: {text} !important;
         }}
         div[data-testid="stMetricValue"] {{
-            font-family: "Courier New", Courier, monospace !important;
             font-size: 1.15rem;
-            font-weight: 500;
+            font-weight: 600;
             color: {text} !important;
         }}
         div[data-testid="stMetricLabel"] {{
-            font-size: 0.78rem;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+            font-size: 0.8rem;
             color: {muted} !important;
         }}
         div[data-testid="stVerticalBlockBorderWrapper"] {{
-            background: {panel_bg};
+            background: {panel};
             border: 1px solid {border} !important;
-            border-radius: 6px;
+            border-radius: 2px;
             padding: 0.4rem 0.5rem 0.15rem 0.5rem;
-            box-shadow: {shadow};
+            box-shadow: none;
         }}
         section[data-testid="stSidebar"] {{
-            background: {sidebar_bg} !important;
+            background: {sidebar} !important;
             border-right: 1px solid {border};
         }}
         section[data-testid="stSidebar"] * {{
             color: {text};
         }}
         [data-testid="stHeader"] {{
-            background: transparent !important;
+            background: {bg} !important;
         }}
         .stSelectbox label, .stSlider label, .stRadio label,
         .stNumberInput label, .stTextInput label {{
-            color: {muted} !important;
+            color: {text} !important;
         }}
         [data-testid="stTextInput"] input,
         [data-testid="stNumberInput"] input,
@@ -95,39 +94,39 @@ def _apply_chrome() -> None:
         div[data-baseweb="input"],
         div[data-baseweb="base-input"],
         div[data-baseweb="input"] input {{
-            background-color: {panel_bg} !important;
-            background: {panel_bg} !important;
+            background-color: {input_bg} !important;
+            background: {input_bg} !important;
             color: {text} !important;
             border-color: {border} !important;
             caret-color: {text} !important;
             -webkit-text-fill-color: {text} !important;
         }}
         [data-testid="stNumberInput"] button {{
-            background-color: {panel_bg} !important;
-            color: #ff4b4b !important;
+            background-color: {button} !important;
+            color: {text} !important;
             border-color: {border} !important;
         }}
         [data-testid="stNumberInput"] button svg,
         [data-testid="stNumberInput"] button span,
         [data-testid="stNumberInput"] button i {{
-            color: #ff4b4b !important;
-            fill: #ff4b4b !important;
+            color: {text} !important;
+            fill: {text} !important;
         }}
         [data-testid="stNumberInput"] button:hover {{
-            background-color: {border} !important;
-            color: #ff4b4b !important;
+            background-color: {button_hover} !important;
+            color: {text} !important;
         }}
         div[data-baseweb="popover"],
         div[data-baseweb="popover"] ul,
         ul[role="listbox"],
         li[role="option"] {{
-            background-color: {panel_bg} !important;
-            background: {panel_bg} !important;
+            background-color: {bg} !important;
+            background: {bg} !important;
             color: {text} !important;
         }}
         li[role="option"]:hover,
         li[role="option"][aria-selected="true"] {{
-            background-color: {border} !important;
+            background-color: #ececec !important;
         }}
         [data-testid="stTextInput"] input::placeholder,
         [data-testid="stNumberInput"] input::placeholder {{
@@ -145,6 +144,32 @@ def _apply_chrome() -> None:
         div[data-testid="stMarkdownContainer"] p {{
             color: {text};
         }}
+        .stButton > button,
+        .stButton > button[kind="primary"],
+        button[data-testid="baseButton-primary"],
+        button[kind="primary"] {{
+            background-color: {button} !important;
+            background-image: none !important;
+            color: {text} !important;
+            border: 1px solid #b5b5b5 !important;
+            border-radius: 2px !important;
+            font-weight: 600 !important;
+            box-shadow: none !important;
+        }}
+        .stButton > button:hover,
+        .stButton > button[kind="primary"]:hover,
+        button[data-testid="baseButton-primary"]:hover,
+        button[kind="primary"]:hover {{
+            background-color: {button_hover} !important;
+            color: {text} !important;
+            border-color: #999999 !important;
+        }}
+        div[role="radiogroup"] label {{
+            color: {text} !important;
+        }}
+        [data-testid="stSlider"] [data-baseweb="slider"] div {{
+            background-color: #cfcfcf !important;
+        }}
         </style>
         """,
         unsafe_allow_html=True,
@@ -153,70 +178,28 @@ def _apply_chrome() -> None:
 
 def _chart_palette() -> dict:
     return {
-        "font": "#d7e3f4",
-        "title": "#eaf2ff",
-        "muted": "#8fa3bc",
-        "paper": "#0b1524",
-        "plot": "#07111f",
-        "scene": "#07111f",
-        "axis_bg": "#0a1830",
-        "grid": "#1c3354",
-        "line": "#5eb0ff",
-        "marker": "#ff4b4b",
-        "vline": "#5a7394",
-        "axis_line": "#2a4668",
+        "font": "#111111",
+        "title": "#111111",
+        "muted": "#555555",
+        "paper": "#ffffff",
+        "plot": "#ffffff",
+        "scene": "#ffffff",
+        "axis_bg": "#f7f7f7",
+        "grid": "#dddddd",
+        "line": "#333333",
+        "marker": "#111111",
+        "vline": "#777777",
+        "axis_line": "#999999",
     }
 
 
-def _vivid_iv_colorscale(z: np.ndarray) -> tuple[list | str, float, float]:
-    """
-    Full IV% colorbar range, with the vivid Turbo band packed into the
-    bulk of the data so the surface stays colourful.
-    """
+def _iv_colorscale(z: np.ndarray) -> tuple[list | str, float, float]:
+    """Muted greyscale IV colorbar for a plain light theme."""
     zmin = float(np.nanmin(z))
     zmax = float(np.nanmax(z))
     if not np.isfinite(zmin) or not np.isfinite(zmax) or zmax <= zmin:
-        return "Turbo", zmin, zmax
-
-    lo = float(np.nanpercentile(z, 2))
-    hi = float(np.nanpercentile(z, 98))
-    lo = max(lo, zmin)
-    hi = min(hi, zmax)
-    if hi <= lo:
-        return "Turbo", zmin, zmax
-
-    span = zmax - zmin
-    t_lo = (lo - zmin) / span
-    t_hi = (hi - zmin) / span
-
-    turbo = [
-        [0.0, "#30123b"],
-        [0.08, "#4145ab"],
-        [0.16, "#4662d7"],
-        [0.24, "#3e8ef4"],
-        [0.32, "#2cb4e4"],
-        [0.40, "#1ae4b6"],
-        [0.48, "#6dff75"],
-        [0.56, "#c8ef34"],
-        [0.64, "#f5db19"],
-        [0.72, "#fba238"],
-        [0.80, "#f66b19"],
-        [0.88, "#e03b0d"],
-        [0.96, "#a51107"],
-        [1.0, "#7a0403"],
-    ]
-    scale: list[list] = [[0.0, turbo[0][1]]]
-    for t, color in turbo:
-        scale.append([t_lo + t * (t_hi - t_lo), color])
-    scale.append([1.0, turbo[-1][1]])
-
-    cleaned: list[list] = []
-    for pos, color in scale:
-        pos = float(min(max(pos, 0.0), 1.0))
-        if cleaned and pos <= cleaned[-1][0]:
-            pos = min(cleaned[-1][0] + 1e-6, 1.0)
-        cleaned.append([pos, color])
-    return cleaned, zmin, zmax
+        return "Greys", zmin, zmax
+    return "Greys", zmin, zmax
 
 
 @st.cache_data(ttl=300, show_spinner=False)
@@ -226,8 +209,9 @@ def _load_chain(ticker: str) -> dict:
 
 def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
     z = np.asarray(grid["iv_mesh"], dtype=float)
-    colorscale, zmin, zmax = _vivid_iv_colorscale(z)
+    colorscale, zmin, zmax = _iv_colorscale(z)
     p = _chart_palette()
+    font_family = "Arial, Helvetica, sans-serif"
 
     fig = go.Figure(
         data=[
@@ -236,6 +220,7 @@ def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
                 y=grid["day_mesh"],
                 z=z,
                 colorscale=colorscale,
+                reversescale=True,
                 cmin=zmin,
                 cmax=zmax,
                 lighting=dict(
@@ -263,7 +248,7 @@ def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
                     z=dict(
                         show=True,
                         usecolormap=True,
-                        highlightcolor="#ffffff",
+                        highlightcolor="#444444",
                         width=1,
                         project=dict(z=False),
                     )
@@ -288,7 +273,7 @@ def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
             text=f"{ticker} {option_type.upper()} Surface",
             x=0.0,
             xanchor="left",
-            font=dict(size=14, color=p["title"], family="Courier New, Courier, monospace"),
+            font=dict(size=14, color=p["title"], family=font_family),
         ),
         scene=dict(
             xaxis=_axis("Strike"),
@@ -302,13 +287,14 @@ def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
         margin=dict(l=0, r=0, t=40, b=0),
         height=640,
         paper_bgcolor=p["paper"],
-        font=dict(color=p["font"], family="Courier New, Courier, monospace"),
+        font=dict(color=p["font"], family=font_family),
     )
     return fig
 
 
 def _smile_figure(smile, expiry: str, spot: float, option_type: str) -> go.Figure:
     p = _chart_palette()
+    font_family = "Arial, Helvetica, sans-serif"
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
@@ -333,7 +319,7 @@ def _smile_figure(smile, expiry: str, spot: float, option_type: str) -> go.Figur
     fig.update_layout(
         title=dict(
             text=f"{option_type.upper()} smile — {expiry}",
-            font=dict(size=14, color=p["title"]),
+            font=dict(size=14, color=p["title"], family=font_family),
         ),
         xaxis_title="Strike",
         yaxis_title="IV %",
@@ -341,7 +327,7 @@ def _smile_figure(smile, expiry: str, spot: float, option_type: str) -> go.Figur
         margin=dict(l=40, r=20, t=44, b=40),
         paper_bgcolor=p["paper"],
         plot_bgcolor=p["plot"],
-        font=dict(color=p["font"], size=12, family="Courier New, Courier, monospace"),
+        font=dict(color=p["font"], size=12, family=font_family),
         xaxis=dict(
             gridcolor=p["grid"],
             zeroline=False,
@@ -367,21 +353,19 @@ def main() -> None:
         <div style="margin: 0 0 1.1rem 0;">
           <h1 style="
             margin: 0 0 0.35rem 0;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: Arial, Helvetica, sans-serif;
             font-weight: 600;
-            letter-spacing: -0.02em;
-            font-size: 1.65rem;
-            color: #e6eef8;
+            letter-spacing: 0;
+            font-size: 1.55rem;
+            color: #111111;
           ">Implied Volatility Surface</h1>
           <p style="
             margin: 0;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.78rem;
-            font-weight: 500;
-            letter-spacing: 0.22em;
-            text-transform: uppercase;
-            color: #5a7a9a;
-          ">by William Potter</p>
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #555555;
+          ">William Potter</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -395,7 +379,7 @@ def main() -> None:
         min_volume = st.number_input("Min volume or OI", min_value=0, value=1, step=1)
         max_spread = st.slider("Max bid-ask / mid", 0.05, 0.80, 0.35, 0.05)
         moneyness = st.slider("Moneyness band", 0.50, 1.50, (0.70, 1.30), 0.05)
-        run = st.button("Update", type="primary", use_container_width=True)
+        run = st.button("Update", use_container_width=True)
 
     if not ticker:
         st.warning("Enter a ticker.")
