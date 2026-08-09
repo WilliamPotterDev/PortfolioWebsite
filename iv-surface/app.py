@@ -187,7 +187,7 @@ def _chart_palette() -> dict:
         "axis_bg": "#080808",
         "grid": "#222222",
         "line": "#ffffff",
-        "marker": "#0066ff",
+        "marker": "#888888",
         "vline": "#888888",
         "axis_line": "#666666",
     }
@@ -334,7 +334,7 @@ def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
 
 
 def _smile_stats_line(smile, spot: float, expiry: str) -> str:
-    """Compact key: value pairs derived from the selected smile slice."""
+    """Even key/value stats grid derived from the selected smile slice."""
     nearest = smile.iloc[(smile["strike"] - spot).abs().argsort()[:1]]
     atm_iv = float(nearest["iv_pct"].iloc[0])
     min_iv = float(smile["iv_pct"].min())
@@ -352,12 +352,31 @@ def _smile_stats_line(smile, spot: float, expiry: str) -> str:
         ("Max IV", f"{max_iv:.1f}%"),
         ("Strike range", f"{min_k:.0f}–{max_k:.0f}"),
     ]
-    parts = [f"{label}: {value}" for label, value in items]
-    line = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".join(parts)
+    cells = "".join(
+        (
+            '<div style="'
+            "display:flex; flex-direction:column; gap:0.2rem; "
+            "min-width:0;"
+            '">'
+            f'<span style="color:#eeeeee; font-size:0.72rem; letter-spacing:0.04em; '
+            f'text-transform:uppercase;">{label}</span>'
+            f'<span style="color:#ffffff; font-size:0.95rem; font-weight:600;">'
+            f"{value}</span>"
+            "</div>"
+        )
+        for label, value in items
+    )
     return (
-        f'<p style="margin: 0.35rem 0 0 0; font-family: \'Courier New\', Courier, '
-        f'monospace; font-size: 0.82rem; color: #aaaaaa; white-space: normal; '
-        f'line-height: 1.7;">{line}</p>'
+        '<div style="'
+        "margin: 0.75rem 0 0.25rem 0; "
+        "padding: 0.85rem 1rem; "
+        "border: 1px solid #2f2f2f; "
+        "font-family: 'Courier New', Courier, monospace; "
+        "display: grid; "
+        "grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); "
+        "gap: 0.85rem 1.25rem; "
+        "align-items: start;"
+        f'">{cells}</div>'
     )
 
 
@@ -372,7 +391,7 @@ def _smile_figure(smile, spot: float, option_type: str) -> go.Figure:
             mode="lines+markers",
             name="IV",
             line=dict(color=p["line"], width=2),
-            marker=dict(size=5, color="#0066ff", line=dict(width=0)),
+            marker=dict(size=5, color="#888888", line=dict(width=0)),
             hovertemplate="Strike %{x:.2f}<br>IV %{y:.2f}%<extra></extra>",
         )
     )
