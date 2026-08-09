@@ -3,3 +3,11 @@ toolbarMode = "minimal"
 
 [ui]
 hideTopBar = true
+
+[theme]
+base = "dark"
+primaryColor = "#ff4b4b"
+backgroundColor = "#05080f"
+secondaryBackgroundColor = "#0b1524"
+textColor = "#e6eef8"
+font = "monospace"

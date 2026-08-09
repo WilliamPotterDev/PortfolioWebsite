@@ -19,23 +19,14 @@ st.set_page_config(
 )
 
 
-def _apply_chrome(dark: bool) -> None:
-    if dark:
-        main_bg = "linear-gradient(165deg, #05080f 0%, #0a1628 42%, #0d2137 100%)"
-        sidebar_bg = "#070c16"
-        panel_bg = "#0b1524"
-        border = "#1e3a5f"
-        text = "#e6eef8"
-        muted = "#8fa3bc"
-        shadow = "0 10px 36px rgba(0, 0, 0, 0.45)"
-    else:
-        main_bg = "#ffffff"
-        sidebar_bg = "#f8fafc"
-        panel_bg = "#ffffff"
-        border = "#d7dde5"
-        text = "#1e293b"
-        muted = "#64748b"
-        shadow = "none"
+def _apply_chrome() -> None:
+    main_bg = "linear-gradient(165deg, #05080f 0%, #0a1628 42%, #0d2137 100%)"
+    sidebar_bg = "#070c16"
+    panel_bg = "#0b1524"
+    border = "#1e3a5f"
+    text = "#e6eef8"
+    muted = "#8fa3bc"
+    shadow = "0 10px 36px rgba(0, 0, 0, 0.45)"
 
     st.markdown(
         f"""
@@ -95,7 +86,6 @@ def _apply_chrome(dark: bool) -> None:
         .stNumberInput label, .stTextInput label {{
             color: {muted} !important;
         }}
-        /* Inputs / dropdowns follow theme (not stuck white in dark mode) */
         [data-testid="stTextInput"] input,
         [data-testid="stNumberInput"] input,
         [data-testid="stNumberInput"] [data-testid="stNumberInputField"],
@@ -144,7 +134,6 @@ def _apply_chrome(dark: bool) -> None:
             color: {muted} !important;
             -webkit-text-fill-color: {muted} !important;
         }}
-        /* Override Streamlit's forced white control fills in dark mode */
         .stApp [data-testid="stTextInput"] *,
         .stApp [data-testid="stNumberInput"] input,
         .stApp [data-testid="stSelectbox"] [data-baseweb="select"] * {{
@@ -156,47 +145,26 @@ def _apply_chrome(dark: bool) -> None:
         div[data-testid="stMarkdownContainer"] p {{
             color: {text};
         }}
-        div.mode-toggle label,
-        div.mode-toggle p {{
-            color: {muted} !important;
-            font-size: 0.9rem !important;
-            font-weight: 500 !important;
-        }}
         </style>
         """,
         unsafe_allow_html=True,
     )
 
 
-def _chart_palette(dark: bool) -> dict:
-    if dark:
-        return {
-            "font": "#d7e3f4",
-            "title": "#eaf2ff",
-            "muted": "#8fa3bc",
-            "paper": "#0b1524",
-            "plot": "#07111f",
-            "scene": "#07111f",
-            "axis_bg": "#0a1830",
-            "grid": "#1c3354",
-            "line": "#5eb0ff",
-            "marker": "#ff4b4b",  # match Streamlit primary / Update button
-            "vline": "#5a7394",
-            "axis_line": "#2a4668",
-        }
+def _chart_palette() -> dict:
     return {
-        "font": "#334155",
-        "title": "#1e293b",
-        "muted": "#64748b",
-        "paper": "#ffffff",
-        "plot": "#ffffff",
-        "scene": "#ffffff",
-        "axis_bg": "#f7f8fa",
-        "grid": "#d9dee6",
-        "line": "#1f3a56",
-        "marker": "#ff4b4b",  # match Streamlit primary / Update button
-        "vline": "#94a3b8",
-        "axis_line": "#cbd5e1",
+        "font": "#d7e3f4",
+        "title": "#eaf2ff",
+        "muted": "#8fa3bc",
+        "paper": "#0b1524",
+        "plot": "#07111f",
+        "scene": "#07111f",
+        "axis_bg": "#0a1830",
+        "grid": "#1c3354",
+        "line": "#5eb0ff",
+        "marker": "#ff4b4b",
+        "vline": "#5a7394",
+        "axis_line": "#2a4668",
     }
 
 
@@ -256,16 +224,10 @@ def _load_chain(ticker: str) -> dict:
     return fetch_options_chain(ticker)
 
 
-def _surface_figure(
-    grid: dict,
-    option_type: str,
-    ticker: str,
-    *,
-    dark: bool,
-) -> go.Figure:
+def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
     z = np.asarray(grid["iv_mesh"], dtype=float)
     colorscale, zmin, zmax = _vivid_iv_colorscale(z)
-    p = _chart_palette(dark)
+    p = _chart_palette()
 
     fig = go.Figure(
         data=[
@@ -345,15 +307,8 @@ def _surface_figure(
     return fig
 
 
-def _smile_figure(
-    smile,
-    expiry: str,
-    spot: float,
-    option_type: str,
-    *,
-    dark: bool,
-) -> go.Figure:
-    p = _chart_palette(dark)
+def _smile_figure(smile, expiry: str, spot: float, option_type: str) -> go.Figure:
+    p = _chart_palette()
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
@@ -406,20 +361,8 @@ def _smile_figure(
 
 
 def main() -> None:
-    if "dark_mode" not in st.session_state:
-        st.session_state.dark_mode = False
-
-    _apply_chrome(st.session_state.dark_mode)
-
-    title_col, toggle_col = st.columns([5, 1.1], vertical_alignment="center")
-    with title_col:
-        st.title("Implied Volatility Surface")
-    with toggle_col:
-        st.markdown('<div class="mode-toggle">', unsafe_allow_html=True)
-        st.toggle("Mode", key="dark_mode")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    dark = bool(st.session_state.dark_mode)
+    _apply_chrome()
+    st.title("Implied Volatility Surface")
 
     with st.sidebar:
         st.subheader("Inputs")
@@ -508,7 +451,7 @@ def main() -> None:
 
     with st.container(border=True):
         st.plotly_chart(
-            _surface_figure(surface["grid"], option_type, ticker, dark=dark),
+            _surface_figure(surface["grid"], option_type, ticker),
             use_container_width=True,
         )
 
@@ -523,7 +466,7 @@ def main() -> None:
         st.warning("No smile points for that expiry after filters.")
     else:
         st.plotly_chart(
-            _smile_figure(smile, expiry, surface["spot"], option_type, dark=dark),
+            _smile_figure(smile, expiry, surface["spot"], option_type),
             use_container_width=True,
         )
 
