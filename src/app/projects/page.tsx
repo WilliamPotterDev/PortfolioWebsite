@@ -36,38 +36,21 @@ export default function ProjectsPage() {
               </a>
             </div>
 
-            <div className="mt-10 grid gap-5 md:grid-cols-5">
-              <a
-                href="https://iv-surface-project.streamlit.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative overflow-hidden border border-white/10 bg-black/40 md:col-span-3"
-              >
-                <Image
-                  src="/projects/iv-surface-dashboard.png"
-                  alt="Implied volatility surface dashboard"
-                  width={1600}
-                  height={1000}
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-                  priority
-                />
-              </a>
-
-              <a
-                href="https://iv-surface-project.streamlit.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative overflow-hidden border border-white/10 bg-black/40 md:col-span-2"
-              >
-                <Image
-                  src="/projects/iv-surface-smile.png"
-                  alt="Call smile volatility plot"
-                  width={1200}
-                  height={800}
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-                />
-              </a>
-            </div>
+            <a
+              href="https://iv-surface-project.streamlit.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative mt-10 block overflow-hidden border border-white/10 bg-black/40"
+            >
+              <Image
+                src="/projects/iv-surface.png"
+                alt="Implied volatility surface app"
+                width={1600}
+                height={1000}
+                className="h-auto w-full object-cover transition duration-500 group-hover:scale-[1.01]"
+                priority
+              />
+            </a>
           </article>
         </main>
       </div>
