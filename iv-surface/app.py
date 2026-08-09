@@ -383,10 +383,18 @@ def _smile_stats_line(smile, spot: float, expiry: str) -> str:
 def _smile_figure(smile, spot: float, option_type: str) -> go.Figure:
     p = _chart_palette()
     font_family = "Courier New, Courier, monospace"
-    marker_colors = [
-        "#22c55e" if float(strike) < spot else "#ef4444"
-        for strike in smile["strike"]
-    ]
+    # Calls: OTM call wing is above spot → green right, red left.
+    # Puts: flip so the OTM put wing (below spot) is green, red right.
+    if option_type == "put":
+        marker_colors = [
+            "#22c55e" if float(strike) < spot else "#ef4444"
+            for strike in smile["strike"]
+        ]
+    else:
+        marker_colors = [
+            "#ef4444" if float(strike) < spot else "#22c55e"
+            for strike in smile["strike"]
+        ]
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
