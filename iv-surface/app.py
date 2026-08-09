@@ -20,15 +20,15 @@ st.set_page_config(
 
 
 def _apply_chrome() -> None:
-    bg = "#000000"
-    panel = "#000000"
-    sidebar = "#000000"
-    border = "#2f2f2f"
-    text = "#eeeeee"
-    muted = "#aaaaaa"
-    button = "#262626"
-    button_hover = "#3b3b3b"
-    input_bg = "#000000"
+    bg = "#ffffff"
+    panel = "#ffffff"
+    sidebar = "#ffffff"
+    border = "#d0d0d0"
+    text = "#111111"
+    muted = "#555555"
+    button = "#d9d9d9"
+    button_hover = "#c4c4c4"
+    input_bg = "#ffffff"
 
     st.markdown(
         f"""
@@ -126,7 +126,7 @@ def _apply_chrome() -> None:
         }}
         li[role="option"]:hover,
         li[role="option"][aria-selected="true"] {{
-            background-color: #131313 !important;
+            background-color: #ececec !important;
         }}
         [data-testid="stTextInput"] input::placeholder,
         [data-testid="stNumberInput"] input::placeholder {{
@@ -151,7 +151,7 @@ def _apply_chrome() -> None:
             background-color: {button} !important;
             background-image: none !important;
             color: {text} !important;
-            border: 1px solid #4a4a4a !important;
+            border: 1px solid #b5b5b5 !important;
             border-radius: 2px !important;
             font-weight: 600 !important;
             box-shadow: none !important;
@@ -162,13 +162,13 @@ def _apply_chrome() -> None:
         button[kind="primary"]:hover {{
             background-color: {button_hover} !important;
             color: {text} !important;
-            border-color: #666666 !important;
+            border-color: #999999 !important;
         }}
         div[role="radiogroup"] label {{
             color: {text} !important;
         }}
         [data-testid="stSlider"] [data-baseweb="slider"] div {{
-            background-color: #303030 !important;
+            background-color: #cfcfcf !important;
         }}
         </style>
         """,
@@ -178,18 +178,18 @@ def _apply_chrome() -> None:
 
 def _chart_palette() -> dict:
     return {
-        "font": "#eeeeee",
-        "title": "#eeeeee",
-        "muted": "#aaaaaa",
-        "paper": "#000000",
-        "plot": "#000000",
-        "scene": "#000000",
-        "axis_bg": "#141414",
-        "grid": "#555555",
-        "line": "#ffffff",
+        "font": "#111111",
+        "title": "#111111",
+        "muted": "#555555",
+        "paper": "#ffffff",
+        "plot": "#ffffff",
+        "scene": "#ffffff",
+        "axis_bg": "#f0f0f0",
+        "grid": "#c8c8c8",
+        "line": "#000000",
         "marker": "#555555",
-        "vline": "#888888",
-        "axis_line": "#666666",
+        "vline": "#777777",
+        "axis_line": "#999999",
     }
 
 
@@ -358,9 +358,9 @@ def _smile_stats_line(smile, spot: float, expiry: str) -> str:
             "display:flex; flex-direction:column; gap:0.2rem; "
             "min-width:0;"
             '">'
-            f'<span style="color:#eeeeee; font-size:0.72rem; letter-spacing:0.04em; '
+            f'<span style="color:#555555; font-size:0.72rem; letter-spacing:0.04em; '
             f'text-transform:uppercase;">{label}</span>'
-            f'<span style="color:#ffffff; font-size:0.95rem; font-weight:600;">'
+            f'<span style="color:#111111; font-size:0.95rem; font-weight:600;">'
             f"{value}</span>"
             "</div>"
         )
@@ -370,7 +370,8 @@ def _smile_stats_line(smile, spot: float, expiry: str) -> str:
         '<div style="'
         "margin: 0.75rem 0 0.25rem 0; "
         "padding: 0.85rem 1rem; "
-        "border: 1px solid #2f2f2f; "
+        "border: 1px solid #d0d0d0; "
+        "background: #ffffff; "
         "font-family: 'Courier New', Courier, monospace; "
         "display: grid; "
         "grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); "
@@ -457,14 +458,14 @@ def main() -> None:
             font-weight: 600;
             letter-spacing: 0;
             font-size: 1.55rem;
-            color: #eeeeee;
+            color: #111111;
           ">Implied Volatility Surface</h1>
           <p style="
             margin: 0;
             font-family: 'Courier New', Courier, monospace;
             font-size: 0.85rem;
             font-weight: 400;
-            color: #aaaaaa;
+            color: #555555;
           ">William Potter</p>
         </div>
         """,
