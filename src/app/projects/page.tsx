@@ -36,21 +36,38 @@ export default function ProjectsPage() {
               </a>
             </div>
 
-            <a
-              href="https://iv-surface-project.streamlit.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative mt-10 block overflow-hidden border border-white/10 bg-black/40"
-            >
-              <Image
-                src="/projects/iv-surface.png"
-                alt="Implied volatility surface app"
-                width={1600}
-                height={1000}
-                className="h-auto w-full object-cover transition duration-500 group-hover:scale-[1.01]"
-                priority
-              />
-            </a>
+            <div className="mt-10 flex flex-col gap-5">
+              <a
+                href="https://iv-surface-project.streamlit.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block overflow-hidden border border-white/10 bg-black/40"
+              >
+                <Image
+                  src="/projects/iv-surface.png"
+                  alt="Implied volatility surface dashboard"
+                  width={1600}
+                  height={1000}
+                  className="h-auto w-full object-contain"
+                  priority
+                />
+              </a>
+
+              <a
+                href="https://iv-surface-project.streamlit.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block overflow-hidden border border-white/10 bg-black/40"
+              >
+                <Image
+                  src="/projects/iv-surface-smile.png"
+                  alt="Put smile volatility plot"
+                  width={1600}
+                  height={1000}
+                  className="h-auto w-full object-contain"
+                />
+              </a>
+            </div>
           </article>
         </main>
       </div>
