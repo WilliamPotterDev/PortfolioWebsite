@@ -187,7 +187,7 @@ def _chart_palette() -> dict:
         "axis_bg": "#080808",
         "grid": "#222222",
         "line": "#ffffff",
-        "marker": "#ff0000",
+        "marker": "#0066ff",
         "vline": "#888888",
         "axis_line": "#666666",
     }
@@ -344,7 +344,7 @@ def _smile_figure(smile, spot: float, option_type: str) -> go.Figure:
             mode="lines+markers",
             name="IV",
             line=dict(color=p["line"], width=2),
-            marker=dict(size=5, color="#ff0000", line=dict(width=0)),
+            marker=dict(size=5, color="#0066ff", line=dict(width=0)),
             hovertemplate="Strike %{x:.2f}<br>IV %{y:.2f}%<extra></extra>",
         )
     )
