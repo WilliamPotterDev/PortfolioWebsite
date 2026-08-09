@@ -37,13 +37,12 @@ export default function ProjectsPage() {
             </div>
 
             <p className="mt-6 max-w-3xl text-sm leading-relaxed tracking-wide text-white/70 sm:text-[15px]">
-              An interactive options analytics tool that pulls live market
-              prices, backs out implied volatility with Black-Scholes, and maps
-              the full vol surface and smile. Built to show how pricing,
-              liquidity filters, and skew feed into a clearer read on market
-              risk — the kind of market-structure intuition that supports
-              client conversations and trade ideas in sales &amp; trading or
-              investment banking coverage.
+              An interactive options analytics tool which pulls live market
+              prices using various APIs, and generates implied volatility using
+              an inverse Black-Scholes model. It maps out the full volatility
+              surface and smile based on user inputted parameters. This was
+              built to show how pricing, liquidity filters, and skew can be
+              used to form a clearer read on market risk.
             </p>
 
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
