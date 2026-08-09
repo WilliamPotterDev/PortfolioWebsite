@@ -12,40 +12,198 @@ from data_fetcher import fetch_options_chain
 from surface_builder import build_iv_surface, smile_for_expiry
 
 st.set_page_config(
-    page_title="IV Surface Desk",
+    page_title="Implied Volatility Surface",
     page_icon="IV",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-st.markdown(
-    """
-    <style>
-    .block-container { padding-top: 1.2rem; }
-    div[data-testid="stMetricValue"] { font-size: 1.35rem; }
-    div[data-testid="stVerticalBlockBorderWrapper"] {
-        background: rgba(14, 18, 26, 0.92);
-        border: 1px solid rgba(90, 110, 130, 0.45) !important;
-        border-radius: 10px;
-        padding: 0.6rem 0.75rem 0.35rem 0.75rem;
-        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+
+def _apply_chrome(dark: bool) -> None:
+    if dark:
+        main_bg = "linear-gradient(165deg, #05080f 0%, #0a1628 42%, #0d2137 100%)"
+        sidebar_bg = "#070c16"
+        panel_bg = "#0b1524"
+        border = "#1e3a5f"
+        text = "#e6eef8"
+        muted = "#8fa3bc"
+        shadow = "0 10px 36px rgba(0, 0, 0, 0.45)"
+    else:
+        main_bg = "#ffffff"
+        sidebar_bg = "#f8fafc"
+        panel_bg = "#ffffff"
+        border = "#d7dde5"
+        text = "#1e293b"
+        muted = "#64748b"
+        shadow = "none"
+
+    st.markdown(
+        f"""
+        <style>
+        html, body, [class*="css"], .stApp, button, input, label, p, h1, h2, h3, h4, h5, h6 {{
+            font-family: "Courier New", Courier, monospace !important;
+        }}
+        .stApp {{
+            background: {main_bg};
+            color: {text};
+        }}
+        .block-container {{
+            padding-top: 1.25rem;
+            padding-bottom: 2rem;
+            max-width: 1200px;
+        }}
+        h1, h2, h3, h4, h5, h6, p, label, span, div {{
+            color: inherit;
+        }}
+        h1 {{
+            font-weight: 600 !important;
+            letter-spacing: -0.02em;
+            font-size: 1.65rem !important;
+            margin-bottom: 0.25rem !important;
+            color: {text} !important;
+        }}
+        div[data-testid="stMetricValue"] {{
+            font-family: "Courier New", Courier, monospace !important;
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: {text} !important;
+        }}
+        div[data-testid="stMetricLabel"] {{
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: {muted} !important;
+        }}
+        div[data-testid="stVerticalBlockBorderWrapper"] {{
+            background: {panel_bg};
+            border: 1px solid {border} !important;
+            border-radius: 6px;
+            padding: 0.4rem 0.5rem 0.15rem 0.5rem;
+            box-shadow: {shadow};
+        }}
+        section[data-testid="stSidebar"] {{
+            background: {sidebar_bg} !important;
+            border-right: 1px solid {border};
+        }}
+        section[data-testid="stSidebar"] * {{
+            color: {text};
+        }}
+        [data-testid="stHeader"] {{
+            background: transparent !important;
+        }}
+        .stSelectbox label, .stSlider label, .stRadio label,
+        .stNumberInput label, .stTextInput label {{
+            color: {muted} !important;
+        }}
+        /* Inputs / dropdowns follow theme (not stuck white in dark mode) */
+        [data-testid="stTextInput"] input,
+        [data-testid="stNumberInput"] input,
+        [data-testid="stNumberInput"] [data-testid="stNumberInputField"],
+        [data-testid="stSelectbox"] div[data-baseweb="select"] > div,
+        [data-testid="stSelectbox"] > div > div,
+        div[data-baseweb="select"] > div,
+        div[data-baseweb="input"],
+        div[data-baseweb="base-input"],
+        div[data-baseweb="input"] input {{
+            background-color: {panel_bg} !important;
+            background: {panel_bg} !important;
+            color: {text} !important;
+            border-color: {border} !important;
+            caret-color: {text} !important;
+            -webkit-text-fill-color: {text} !important;
+        }}
+        [data-testid="stNumberInput"] button {{
+            background-color: {panel_bg} !important;
+            color: #ff4b4b !important;
+            border-color: {border} !important;
+        }}
+        [data-testid="stNumberInput"] button svg,
+        [data-testid="stNumberInput"] button span,
+        [data-testid="stNumberInput"] button i {{
+            color: #ff4b4b !important;
+            fill: #ff4b4b !important;
+        }}
+        [data-testid="stNumberInput"] button:hover {{
+            background-color: {border} !important;
+            color: #ff4b4b !important;
+        }}
+        div[data-baseweb="popover"],
+        div[data-baseweb="popover"] ul,
+        ul[role="listbox"],
+        li[role="option"] {{
+            background-color: {panel_bg} !important;
+            background: {panel_bg} !important;
+            color: {text} !important;
+        }}
+        li[role="option"]:hover,
+        li[role="option"][aria-selected="true"] {{
+            background-color: {border} !important;
+        }}
+        [data-testid="stTextInput"] input::placeholder,
+        [data-testid="stNumberInput"] input::placeholder {{
+            color: {muted} !important;
+            -webkit-text-fill-color: {muted} !important;
+        }}
+        /* Override Streamlit's forced white control fills in dark mode */
+        .stApp [data-testid="stTextInput"] *,
+        .stApp [data-testid="stNumberInput"] input,
+        .stApp [data-testid="stSelectbox"] [data-baseweb="select"] * {{
+            color: {text};
+        }}
+        div[data-testid="stStatusWidget"] {{
+            display: none !important;
+        }}
+        div[data-testid="stMarkdownContainer"] p {{
+            color: {text};
+        }}
+        div.mode-toggle label,
+        div.mode-toggle p {{
+            color: {muted} !important;
+            font-size: 0.9rem !important;
+            font-weight: 500 !important;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def _chart_palette(dark: bool) -> dict:
+    if dark:
+        return {
+            "font": "#d7e3f4",
+            "title": "#eaf2ff",
+            "muted": "#8fa3bc",
+            "paper": "#0b1524",
+            "plot": "#07111f",
+            "scene": "#07111f",
+            "axis_bg": "#0a1830",
+            "grid": "#1c3354",
+            "line": "#5eb0ff",
+            "marker": "#ff4b4b",  # match Streamlit primary / Update button
+            "vline": "#5a7394",
+            "axis_line": "#2a4668",
+        }
+    return {
+        "font": "#334155",
+        "title": "#1e293b",
+        "muted": "#64748b",
+        "paper": "#ffffff",
+        "plot": "#ffffff",
+        "scene": "#ffffff",
+        "axis_bg": "#f7f8fa",
+        "grid": "#d9dee6",
+        "line": "#1f3a56",
+        "marker": "#ff4b4b",  # match Streamlit primary / Update button
+        "vline": "#94a3b8",
+        "axis_line": "#cbd5e1",
     }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
 
 
-@st.cache_data(ttl=300, show_spinner=False)
-def _load_chain(ticker: str) -> dict:
-    return fetch_options_chain(ticker)
-
-
-def _turbo_colorscale_for_range(z: np.ndarray) -> tuple[list, float, float]:
+def _vivid_iv_colorscale(z: np.ndarray) -> tuple[list | str, float, float]:
     """
-    Keep the full IV% colorbar range, but pack Turbo's color span into the
-    bulk of the data (2nd–98th percentile) so the surface looks like it did
-    before the scale was widened.
+    Full IV% colorbar range, with the vivid Turbo band packed into the
+    bulk of the data so the surface stays colourful.
     """
     zmin = float(np.nanmin(z))
     zmax = float(np.nanmax(z))
@@ -63,25 +221,27 @@ def _turbo_colorscale_for_range(z: np.ndarray) -> tuple[list, float, float]:
     t_lo = (lo - zmin) / span
     t_hi = (hi - zmin) / span
 
-    # Sample Turbo across the bulk band; clamp outside to end colors.
     turbo = [
         [0.0, "#30123b"],
-        [0.1, "#4662d7"],
-        [0.2, "#36aae5"],
-        [0.3, "#1ae4b6"],
-        [0.4, "#72fe5e"],
-        [0.5, "#c8ef34"],
-        [0.6, "#faba39"],
-        [0.7, "#f66b19"],
-        [0.8, "#ca2a04"],
-        [0.9, "#7a0403"],
+        [0.08, "#4145ab"],
+        [0.16, "#4662d7"],
+        [0.24, "#3e8ef4"],
+        [0.32, "#2cb4e4"],
+        [0.40, "#1ae4b6"],
+        [0.48, "#6dff75"],
+        [0.56, "#c8ef34"],
+        [0.64, "#f5db19"],
+        [0.72, "#fba238"],
+        [0.80, "#f66b19"],
+        [0.88, "#e03b0d"],
+        [0.96, "#a51107"],
         [1.0, "#7a0403"],
     ]
     scale: list[list] = [[0.0, turbo[0][1]]]
     for t, color in turbo:
         scale.append([t_lo + t * (t_hi - t_lo), color])
     scale.append([1.0, turbo[-1][1]])
-    # Plotly requires strictly increasing positions.
+
     cleaned: list[list] = []
     for pos, color in scale:
         pos = float(min(max(pos, 0.0), 1.0))
@@ -91,9 +251,21 @@ def _turbo_colorscale_for_range(z: np.ndarray) -> tuple[list, float, float]:
     return cleaned, zmin, zmax
 
 
-def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
+@st.cache_data(ttl=300, show_spinner=False)
+def _load_chain(ticker: str) -> dict:
+    return fetch_options_chain(ticker)
+
+
+def _surface_figure(
+    grid: dict,
+    option_type: str,
+    ticker: str,
+    *,
+    dark: bool,
+) -> go.Figure:
     z = np.asarray(grid["iv_mesh"], dtype=float)
-    colorscale, zmin, zmax = _turbo_colorscale_for_range(z)
+    colorscale, zmin, zmax = _vivid_iv_colorscale(z)
+    p = _chart_palette(dark)
 
     fig = go.Figure(
         data=[
@@ -104,62 +276,84 @@ def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
                 colorscale=colorscale,
                 cmin=zmin,
                 cmax=zmax,
-                # Matte finish — no specular / metal look.
                 lighting=dict(
-                    ambient=0.92,
-                    diffuse=0.35,
+                    ambient=0.95,
+                    diffuse=0.25,
                     specular=0.0,
                     roughness=1.0,
                     fresnel=0.0,
                 ),
                 lightposition=dict(x=100, y=100, z=2000),
-                colorbar=dict(title=dict(text="IV %", side="right"), len=0.72),
-                hovertemplate=(
-                    "Strike: %{x:.2f}<br>"
-                    "Days to expiry: %{y:.1f}<br>"
-                    "Implied vol: %{z:.2f}%<extra></extra>"
+                colorbar=dict(
+                    title=dict(text="IV %", side="right", font=dict(size=11, color=p["font"])),
+                    len=0.7,
+                    thickness=14,
+                    tickfont=dict(size=10, color=p["muted"]),
+                    outlinewidth=0,
+                    bgcolor="rgba(0,0,0,0)",
                 ),
-                contours={
-                    "x": {"show": True, "color": "rgba(255,255,255,0.10)", "width": 1},
-                    "y": {"show": True, "color": "rgba(255,255,255,0.10)", "width": 1},
-                    "z": {
-                        "show": True,
-                        "usecolormap": True,
-                        "highlightcolor": "#ffffff",
-                        "project": {"z": False},
-                        "width": 2,
-                    },
-                },
+                hovertemplate=(
+                    "Strike %{x:.2f}<br>"
+                    "Days %{y:.1f}<br>"
+                    "IV %{z:.2f}%<extra></extra>"
+                ),
+                contours=dict(
+                    z=dict(
+                        show=True,
+                        usecolormap=True,
+                        highlightcolor="#ffffff",
+                        width=1,
+                        project=dict(z=False),
+                    )
+                ),
             )
         ]
     )
+
+    def _axis(label: str) -> dict:
+        return dict(
+            title=dict(text=label, font=dict(size=12, color=p["muted"])),
+            backgroundcolor=p["axis_bg"],
+            gridcolor=p["grid"],
+            showbackground=True,
+            zeroline=False,
+            tickfont=dict(size=10, color=p["muted"]),
+            color=p["font"],
+        )
+
     fig.update_layout(
         title=dict(
             text=f"{ticker} {option_type.upper()} Surface",
-            x=0.02,
+            x=0.0,
             xanchor="left",
+            font=dict(size=14, color=p["title"], family="Courier New, Courier, monospace"),
         ),
         scene=dict(
-            xaxis_title="Strike Price",
-            yaxis_title="Days to Expiry",
-            zaxis_title="Implied Volatility %",
+            xaxis=_axis("Strike"),
+            yaxis=_axis("Days to expiry"),
+            zaxis=_axis("IV %"),
             aspectmode="manual",
-            aspectratio=dict(x=1.3, y=1.1, z=0.7),
-            camera=dict(eye=dict(x=1.55, y=1.55, z=0.85)),
-            xaxis=dict(backgroundcolor="rgb(18,22,28)", gridcolor="rgb(50,58,70)"),
-            yaxis=dict(backgroundcolor="rgb(18,22,28)", gridcolor="rgb(50,58,70)"),
-            zaxis=dict(backgroundcolor="rgb(18,22,28)", gridcolor="rgb(50,58,70)"),
-            bgcolor="rgb(14,18,26)",
+            aspectratio=dict(x=1.25, y=1.05, z=0.65),
+            camera=dict(eye=dict(x=1.5, y=1.5, z=0.8)),
+            bgcolor=p["scene"],
         ),
-        margin=dict(l=0, r=0, t=48, b=0),
-        height=680,
-        paper_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#e8eef7"),
+        margin=dict(l=0, r=0, t=40, b=0),
+        height=640,
+        paper_bgcolor=p["paper"],
+        font=dict(color=p["font"], family="Courier New, Courier, monospace"),
     )
     return fig
 
 
-def _smile_figure(smile, expiry: str, spot: float, option_type: str) -> go.Figure:
+def _smile_figure(
+    smile,
+    expiry: str,
+    spot: float,
+    option_type: str,
+    *,
+    dark: bool,
+) -> go.Figure:
+    p = _chart_palette(dark)
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
@@ -167,63 +361,90 @@ def _smile_figure(smile, expiry: str, spot: float, option_type: str) -> go.Figur
             y=smile["iv_pct"],
             mode="lines+markers",
             name="IV",
-            line=dict(color="#3dd6c6", width=2.5),
-            marker=dict(size=7, color="#f0b429"),
+            line=dict(color=p["line"], width=2),
+            marker=dict(size=5, color=p["marker"]),
             hovertemplate="Strike %{x:.2f}<br>IV %{y:.2f}%<extra></extra>",
         )
     )
     fig.add_vline(
         x=spot,
-        line_width=1.5,
-        line_dash="dash",
-        line_color="#9aa7b8",
-        annotation_text=f"Spot {spot:.2f}",
+        line_width=1,
+        line_dash="dot",
+        line_color=p["vline"],
+        annotation_text=f"spot {spot:.2f}",
         annotation_position="top",
+        annotation_font=dict(size=11, color=p["muted"]),
     )
     fig.update_layout(
-        title=f"{option_type.upper()} vol smile — expiry {expiry}",
-        xaxis_title="Strike Price",
-        yaxis_title="Implied Volatility %",
-        height=380,
-        margin=dict(l=40, r=20, t=48, b=40),
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(12,16,22,0.85)",
-        font=dict(color="#e8eef7"),
-        xaxis=dict(gridcolor="rgba(80,90,105,0.35)"),
-        yaxis=dict(gridcolor="rgba(80,90,105,0.35)"),
+        title=dict(
+            text=f"{option_type.upper()} smile — {expiry}",
+            font=dict(size=14, color=p["title"]),
+        ),
+        xaxis_title="Strike",
+        yaxis_title="IV %",
+        height=360,
+        margin=dict(l=40, r=20, t=44, b=40),
+        paper_bgcolor=p["paper"],
+        plot_bgcolor=p["plot"],
+        font=dict(color=p["font"], size=12, family="Courier New, Courier, monospace"),
+        xaxis=dict(
+            gridcolor=p["grid"],
+            zeroline=False,
+            showline=True,
+            linecolor=p["axis_line"],
+            color=p["font"],
+        ),
+        yaxis=dict(
+            gridcolor=p["grid"],
+            zeroline=False,
+            showline=True,
+            linecolor=p["axis_line"],
+            color=p["font"],
+        ),
     )
     return fig
 
 
 def main() -> None:
-    st.title("Implied Volatility Surface")
+    if "dark_mode" not in st.session_state:
+        st.session_state.dark_mode = False
+
+    _apply_chrome(st.session_state.dark_mode)
+
+    title_col, toggle_col = st.columns([5, 1.1], vertical_alignment="center")
+    with title_col:
+        st.title("Implied Volatility Surface")
+    with toggle_col:
+        st.markdown('<div class="mode-toggle">', unsafe_allow_html=True)
+        st.toggle("Mode", key="dark_mode")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    dark = bool(st.session_state.dark_mode)
 
     with st.sidebar:
-        st.header("Controls")
+        st.subheader("Inputs")
         ticker = st.text_input("Ticker", value="SPY").strip().upper()
-        option_type = st.radio("Option type", options=["call", "put"], horizontal=True)
-        st.markdown("---")
-        st.subheader("Liquidity filters")
-        min_volume = st.number_input("Min volume (or OI)", min_value=0, value=1, step=1)
+        option_type = st.radio("Type", options=["call", "put"], horizontal=True)
+        st.subheader("Filters")
+        min_volume = st.number_input("Min volume or OI", min_value=0, value=1, step=1)
         max_spread = st.slider("Max bid-ask / mid", 0.05, 0.80, 0.35, 0.05)
         moneyness = st.slider("Moneyness band", 0.50, 1.50, (0.70, 1.30), 0.05)
-        run = st.button("Build surface", type="primary", use_container_width=True)
+        run = st.button("Update", type="primary", use_container_width=True)
 
     if not ticker:
-        st.warning("Enter a ticker symbol.")
+        st.warning("Enter a ticker.")
         return
 
-    # Auto-run on first load; button refreshes after filter tweaks.
     if "bootstrapped" not in st.session_state:
         st.session_state.bootstrapped = True
         run = True
 
     if not run and "surface_payload" not in st.session_state:
-        st.info("Set a ticker and click **Build surface**.")
+        st.info("Choose a ticker and click Update.")
         return
 
     if run:
-        with st.spinner(f"Pulling {ticker} options chain and solving IVs..."):
+        with st.spinner(f"Loading {ticker} options..."):
             try:
                 raw = _load_chain(ticker)
                 surface = build_iv_surface(
@@ -242,13 +463,12 @@ def main() -> None:
                     "option_type": option_type,
                 }
             except Exception as exc:
-                st.error(f"Failed to build surface: {exc}")
+                st.error(f"Could not build surface: {exc}")
                 return
 
     payload = st.session_state.surface_payload
-    # Rebuild if user toggled call/put without re-fetching the chain.
     if payload["option_type"] != option_type or payload["ticker"] != ticker:
-        with st.spinner("Recomputing surface for new settings..."):
+        with st.spinner("Updating surface..."):
             try:
                 if payload["ticker"] != ticker:
                     raw = _load_chain(ticker)
@@ -271,7 +491,7 @@ def main() -> None:
                 }
                 payload = st.session_state.surface_payload
             except Exception as exc:
-                st.error(f"Failed to rebuild surface: {exc}")
+                st.error(f"Could not rebuild surface: {exc}")
                 return
 
     raw = payload["raw"]
@@ -284,15 +504,15 @@ def main() -> None:
     c2.metric("Risk-free (3M)", f"{raw['risk_free_rate']:.2%}")
     c3.metric("IV points", f"{len(iv_df):,}")
     atm = skew.get("atm_iv")
-    c4.metric("ATM IV (near expiry)", f"{atm:.1f}%" if atm is not None else "n/a")
+    c4.metric("ATM IV", f"{atm:.1f}%" if atm is not None else "n/a")
 
     with st.container(border=True):
         st.plotly_chart(
-            _surface_figure(surface["grid"], option_type, ticker),
+            _surface_figure(surface["grid"], option_type, ticker, dark=dark),
             use_container_width=True,
         )
 
-    st.subheader("Volatility smile (single expiry)")
+    st.markdown("##### Smile by expiry")
     expiries = surface["expiries"]
     default_idx = 0
     if skew.get("expiry_used") in expiries:
@@ -303,23 +523,8 @@ def main() -> None:
         st.warning("No smile points for that expiry after filters.")
     else:
         st.plotly_chart(
-            _smile_figure(smile, expiry, surface["spot"], option_type),
+            _smile_figure(smile, expiry, surface["spot"], option_type, dark=dark),
             use_container_width=True,
-        )
-
-    st.subheader("Market sentiment from skew / smile")
-    st.write(skew["summary"])
-
-    with st.expander("Methodology"):
-        st.markdown(
-            """
-            - **Market price** for inversion: bid-ask mid when both sides are live, else last.
-            - **IV solver**: Black-Scholes (no dividend) inverted with `scipy.optimize.brentq`.
-            - **Time**: T in years for pricing math; plot axes show **days** to expiry.
-            - **Filters**: volume/OI, bid-ask width, moneyness band — illiquid deep ITM/OTM
-              marks are dropped because they produce unstable or impossible IVs.
-            - **Surface**: scattered IV points linearly interpolated onto a regular mesh.
-            """
         )
 
 
