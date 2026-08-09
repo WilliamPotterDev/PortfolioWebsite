@@ -333,6 +333,34 @@ def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
     return fig
 
 
+def _smile_stats_line(smile, spot: float, expiry: str) -> str:
+    """Compact key: value pairs derived from the selected smile slice."""
+    nearest = smile.iloc[(smile["strike"] - spot).abs().argsort()[:1]]
+    atm_iv = float(nearest["iv_pct"].iloc[0])
+    min_iv = float(smile["iv_pct"].min())
+    max_iv = float(smile["iv_pct"].max())
+    min_k = float(smile["strike"].min())
+    max_k = float(smile["strike"].max())
+    points = int(len(smile))
+
+    items = [
+        ("Expiry", str(expiry)),
+        ("Points", f"{points}"),
+        ("Spot", f"{spot:.2f}"),
+        ("ATM IV", f"{atm_iv:.1f}%"),
+        ("Min IV", f"{min_iv:.1f}%"),
+        ("Max IV", f"{max_iv:.1f}%"),
+        ("Strike range", f"{min_k:.0f}–{max_k:.0f}"),
+    ]
+    parts = [f"{label}: {value}" for label, value in items]
+    line = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".join(parts)
+    return (
+        f'<p style="margin: 0.35rem 0 0 0; font-family: \'Courier New\', Courier, '
+        f'monospace; font-size: 0.82rem; color: #aaaaaa; white-space: normal; '
+        f'line-height: 1.7;">{line}</p>'
+    )
+
+
 def _smile_figure(smile, spot: float, option_type: str) -> go.Figure:
     p = _chart_palette()
     font_family = "Courier New, Courier, monospace"
@@ -517,6 +545,7 @@ def main() -> None:
             _smile_figure(smile, surface["spot"], option_type),
             use_container_width=True,
         )
+        st.markdown(_smile_stats_line(smile, surface["spot"], expiry), unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
