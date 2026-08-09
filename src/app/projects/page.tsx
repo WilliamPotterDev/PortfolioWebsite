@@ -1,0 +1,76 @@
+import Image from "next/image";
+import ParticleNetwork from "@/components/ParticleNetwork";
+import SiteNav from "@/components/SiteNav";
+
+export default function ProjectsPage() {
+  return (
+    <div className="relative min-h-screen overflow-hidden bg-[#0b0b0b] text-white">
+      <ParticleNetwork />
+
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <SiteNav />
+
+        <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 pb-20 pt-6 sm:px-10">
+          <p className="animate-fade-up text-[11px] font-medium uppercase tracking-[0.22em] text-white/50">
+            Projects
+          </p>
+
+          <article className="animate-fade-up-delay mt-10">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                  Implied Volatility Surface
+                </h1>
+                <p className="mt-3 text-sm tracking-wide text-white/55">
+                  Python · Options · Streamlit
+                </p>
+              </div>
+              <a
+                href="https://iv-surface-project.streamlit.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-fit items-center gap-2 border border-white/25 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-white/90 transition-colors hover:border-white/60 hover:bg-white/5"
+              >
+                Open app
+                <span aria-hidden>→</span>
+              </a>
+            </div>
+
+            <div className="mt-10 grid gap-5 md:grid-cols-5">
+              <a
+                href="https://iv-surface-project.streamlit.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative overflow-hidden border border-white/10 bg-black/40 md:col-span-3"
+              >
+                <Image
+                  src="/projects/iv-surface-dashboard.png"
+                  alt="Implied volatility surface dashboard"
+                  width={1600}
+                  height={1000}
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+                  priority
+                />
+              </a>
+
+              <a
+                href="https://iv-surface-project.streamlit.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative overflow-hidden border border-white/10 bg-black/40 md:col-span-2"
+              >
+                <Image
+                  src="/projects/iv-surface-smile.png"
+                  alt="Call smile volatility plot"
+                  width={1200}
+                  height={800}
+                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+                />
+              </a>
+            </div>
+          </article>
+        </main>
+      </div>
+    </div>
+  );
+}

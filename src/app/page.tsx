@@ -1,10 +1,5 @@
 import ParticleNetwork from "@/components/ParticleNetwork";
-
-const navLinks = [
-  { label: "Home", href: "#" },
-  { label: "Projects", href: "#projects" },
-  { label: "CV", href: "#cv" },
-];
+import SiteNav from "@/components/SiteNav";
 
 function LinkedInIcon() {
   return (
@@ -60,19 +55,7 @@ export default function Home() {
       <ParticleNetwork />
 
       <div className="relative z-10 flex min-h-screen flex-col">
-        <header className="flex items-center justify-end gap-4 px-5 py-6 sm:px-10">
-          <nav className="flex flex-wrap items-center justify-end gap-x-5 gap-y-2 sm:gap-x-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/90 transition-opacity hover:opacity-60"
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
-        </header>
+        <SiteNav />
 
         <main className="flex flex-1 flex-col items-center justify-center px-6 pb-24 text-center">
           <h1 className="animate-fade-up text-[2.6rem] font-semibold tracking-tight text-white sm:text-5xl md:text-6xl">
