@@ -186,20 +186,62 @@ def _chart_palette() -> dict:
         "scene": "#ffffff",
         "axis_bg": "#f7f7f7",
         "grid": "#dddddd",
-        "line": "#333333",
-        "marker": "#111111",
+        "line": "#1f77b4",
+        "marker": "#ff4b4b",
         "vline": "#777777",
         "axis_line": "#999999",
     }
 
 
-def _iv_colorscale(z: np.ndarray) -> tuple[list | str, float, float]:
-    """Muted greyscale IV colorbar for a plain light theme."""
+def _vivid_iv_colorscale(z: np.ndarray) -> tuple[list | str, float, float]:
+    """
+    Full IV% colorbar range, with the vivid Turbo band packed into the
+    bulk of the data so the surface stays colourful.
+    """
     zmin = float(np.nanmin(z))
     zmax = float(np.nanmax(z))
     if not np.isfinite(zmin) or not np.isfinite(zmax) or zmax <= zmin:
-        return "Greys", zmin, zmax
-    return "Greys", zmin, zmax
+        return "Turbo", zmin, zmax
+
+    lo = float(np.nanpercentile(z, 2))
+    hi = float(np.nanpercentile(z, 98))
+    lo = max(lo, zmin)
+    hi = min(hi, zmax)
+    if hi <= lo:
+        return "Turbo", zmin, zmax
+
+    span = zmax - zmin
+    t_lo = (lo - zmin) / span
+    t_hi = (hi - zmin) / span
+
+    turbo = [
+        [0.0, "#30123b"],
+        [0.08, "#4145ab"],
+        [0.16, "#4662d7"],
+        [0.24, "#3e8ef4"],
+        [0.32, "#2cb4e4"],
+        [0.40, "#1ae4b6"],
+        [0.48, "#6dff75"],
+        [0.56, "#c8ef34"],
+        [0.64, "#f5db19"],
+        [0.72, "#fba238"],
+        [0.80, "#f66b19"],
+        [0.88, "#e03b0d"],
+        [0.96, "#a51107"],
+        [1.0, "#7a0403"],
+    ]
+    scale: list[list] = [[0.0, turbo[0][1]]]
+    for t, color in turbo:
+        scale.append([t_lo + t * (t_hi - t_lo), color])
+    scale.append([1.0, turbo[-1][1]])
+
+    cleaned: list[list] = []
+    for pos, color in scale:
+        pos = float(min(max(pos, 0.0), 1.0))
+        if cleaned and pos <= cleaned[-1][0]:
+            pos = min(cleaned[-1][0] + 1e-6, 1.0)
+        cleaned.append([pos, color])
+    return cleaned, zmin, zmax
 
 
 @st.cache_data(ttl=300, show_spinner=False)
@@ -209,7 +251,7 @@ def _load_chain(ticker: str) -> dict:
 
 def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
     z = np.asarray(grid["iv_mesh"], dtype=float)
-    colorscale, zmin, zmax = _iv_colorscale(z)
+    colorscale, zmin, zmax = _vivid_iv_colorscale(z)
     p = _chart_palette()
     font_family = "Arial, Helvetica, sans-serif"
 
@@ -220,7 +262,6 @@ def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
                 y=grid["day_mesh"],
                 z=z,
                 colorscale=colorscale,
-                reversescale=True,
                 cmin=zmin,
                 cmax=zmax,
                 lighting=dict(
@@ -248,7 +289,7 @@ def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
                     z=dict(
                         show=True,
                         usecolormap=True,
-                        highlightcolor="#444444",
+                        highlightcolor="#ffffff",
                         width=1,
                         project=dict(z=False),
                     )
