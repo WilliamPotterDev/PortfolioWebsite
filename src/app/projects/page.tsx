@@ -22,7 +22,7 @@ export default function ProjectsPage() {
                   Implied Volatility Surface
                 </h1>
                 <p className="mt-3 text-sm tracking-wide text-white/55">
-                  Python · Options · Streamlit
+                  Python · Options · Black-Scholes · Plotly
                 </p>
               </div>
               <a
@@ -36,7 +36,17 @@ export default function ProjectsPage() {
               </a>
             </div>
 
-            <div className="mt-10 flex flex-col gap-5">
+            <p className="mt-6 max-w-3xl text-sm leading-relaxed tracking-wide text-white/70 sm:text-[15px]">
+              An interactive options analytics tool that pulls live market
+              prices, backs out implied volatility with Black-Scholes, and maps
+              the full vol surface and smile. Built to show how pricing,
+              liquidity filters, and skew feed into a clearer read on market
+              risk — the kind of market-structure intuition that supports
+              client conversations and trade ideas in sales &amp; trading or
+              investment banking coverage.
+            </p>
+
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <a
                 href="https://iv-surface-project.streamlit.app/"
                 target="_blank"
@@ -46,8 +56,8 @@ export default function ProjectsPage() {
                 <Image
                   src="/projects/iv-surface.png"
                   alt="Implied volatility surface dashboard"
-                  width={1600}
-                  height={1000}
+                  width={1200}
+                  height={750}
                   className="h-auto w-full object-contain"
                   priority
                 />
@@ -62,8 +72,8 @@ export default function ProjectsPage() {
                 <Image
                   src="/projects/iv-surface-smile.png"
                   alt="Put smile volatility plot"
-                  width={1600}
-                  height={1000}
+                  width={1200}
+                  height={750}
                   className="h-auto w-full object-contain"
                 />
               </a>
