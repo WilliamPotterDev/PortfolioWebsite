@@ -333,7 +333,7 @@ def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
     return fig
 
 
-def _smile_figure(smile, expiry: str, spot: float, option_type: str) -> go.Figure:
+def _smile_figure(smile, spot: float, option_type: str) -> go.Figure:
     p = _chart_palette()
     font_family = "Arial, Helvetica, sans-serif"
     fig = go.Figure()
@@ -514,7 +514,7 @@ def main() -> None:
         st.warning("No smile points for that expiry after filters.")
     else:
         st.plotly_chart(
-            _smile_figure(smile, expiry, surface["spot"], option_type),
+            _smile_figure(smile, surface["spot"], option_type),
             use_container_width=True,
         )
 
