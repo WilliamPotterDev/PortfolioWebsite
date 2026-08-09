@@ -186,8 +186,8 @@ def _chart_palette() -> dict:
         "scene": "#ffffff",
         "axis_bg": "#f7f7f7",
         "grid": "#dddddd",
-        "line": "#888888",
-        "marker": "#ff4b4b",
+        "line": "#000000",
+        "marker": "#e00000",
         "vline": "#777777",
         "axis_line": "#999999",
     }
@@ -359,7 +359,7 @@ def _smile_figure(smile, expiry: str, spot: float, option_type: str) -> go.Figur
     )
     fig.update_layout(
         title=dict(
-            text=f"{option_type.upper()} smile — {expiry}",
+            text=f"{option_type.upper()} smile",
             font=dict(size=14, color=p["title"], family=font_family),
         ),
         xaxis_title="Strike",
