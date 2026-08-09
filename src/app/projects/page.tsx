@@ -70,7 +70,7 @@ export default function ProjectsPage() {
               >
                 <Image
                   src="/projects/iv-surface-smile.png"
-                  alt="Put smile volatility plot"
+                  alt="Call smile volatility plot"
                   width={1200}
                   height={750}
                   className="h-auto w-full object-contain"
