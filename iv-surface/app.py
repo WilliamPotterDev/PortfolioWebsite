@@ -34,7 +34,7 @@ def _apply_chrome() -> None:
         f"""
         <style>
         html, body, [class*="css"], .stApp, button, input, label, p, h1, h2, h3, h4, h5, h6 {{
-            font-family: Arial, Helvetica, sans-serif !important;
+            font-family: "Courier New", Courier, monospace !important;
         }}
         .stApp {{
             background: {bg};
@@ -187,7 +187,7 @@ def _chart_palette() -> dict:
         "axis_bg": "#f7f7f7",
         "grid": "#dddddd",
         "line": "#000000",
-        "marker": "#e00000",
+        "marker": "#ff0000",
         "vline": "#777777",
         "axis_line": "#999999",
     }
@@ -253,7 +253,7 @@ def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
     z = np.asarray(grid["iv_mesh"], dtype=float)
     colorscale, zmin, zmax = _vivid_iv_colorscale(z)
     p = _chart_palette()
-    font_family = "Arial, Helvetica, sans-serif"
+    font_family = "Courier New, Courier, monospace"
 
     fig = go.Figure(
         data=[
@@ -335,7 +335,7 @@ def _surface_figure(grid: dict, option_type: str, ticker: str) -> go.Figure:
 
 def _smile_figure(smile, spot: float, option_type: str) -> go.Figure:
     p = _chart_palette()
-    font_family = "Arial, Helvetica, sans-serif"
+    font_family = "Courier New, Courier, monospace"
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
@@ -344,7 +344,7 @@ def _smile_figure(smile, spot: float, option_type: str) -> go.Figure:
             mode="lines+markers",
             name="IV",
             line=dict(color=p["line"], width=2),
-            marker=dict(size=5, color=p["marker"]),
+            marker=dict(size=5, color="#ff0000", line=dict(width=0)),
             hovertemplate="Strike %{x:.2f}<br>IV %{y:.2f}%<extra></extra>",
         )
     )
@@ -394,7 +394,7 @@ def main() -> None:
         <div style="margin: 0 0 1.1rem 0;">
           <h1 style="
             margin: 0 0 0.35rem 0;
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'Courier New', Courier, monospace;
             font-weight: 600;
             letter-spacing: 0;
             font-size: 1.55rem;
@@ -402,7 +402,7 @@ def main() -> None:
           ">Implied Volatility Surface</h1>
           <p style="
             margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'Courier New', Courier, monospace;
             font-size: 0.85rem;
             font-weight: 400;
             color: #555555;
