@@ -383,6 +383,10 @@ def _smile_stats_line(smile, spot: float, expiry: str) -> str:
 def _smile_figure(smile, spot: float, option_type: str) -> go.Figure:
     p = _chart_palette()
     font_family = "Courier New, Courier, monospace"
+    marker_colors = [
+        "#22c55e" if float(strike) < spot else "#ef4444"
+        for strike in smile["strike"]
+    ]
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
@@ -391,7 +395,7 @@ def _smile_figure(smile, spot: float, option_type: str) -> go.Figure:
             mode="lines+markers",
             name="IV",
             line=dict(color=p["line"], width=2),
-            marker=dict(size=5, color="#555555", line=dict(width=0)),
+            marker=dict(size=5, color=marker_colors, line=dict(width=0)),
             hovertemplate="Strike %{x:.2f}<br>IV %{y:.2f}%<extra></extra>",
         )
     )
