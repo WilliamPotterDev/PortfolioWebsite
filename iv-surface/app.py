@@ -185,7 +185,7 @@ def _chart_palette() -> dict:
         "plot": "#000000",
         "scene": "#000000",
         "axis_bg": "#080808",
-        "grid": "#222222",
+        "grid": "#555555",
         "line": "#ffffff",
         "marker": "#555555",
         "vline": "#888888",
