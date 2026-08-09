@@ -362,7 +362,30 @@ def _smile_figure(smile, expiry: str, spot: float, option_type: str) -> go.Figur
 
 def main() -> None:
     _apply_chrome()
-    st.title("Implied Volatility Surface")
+    st.markdown(
+        """
+        <div style="margin: 0 0 1.1rem 0;">
+          <h1 style="
+            margin: 0 0 0.35rem 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            font-size: 1.65rem;
+            color: #e6eef8;
+          ">Implied Volatility Surface</h1>
+          <p style="
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.78rem;
+            font-weight: 500;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #5a7a9a;
+          ">by William Potter</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     with st.sidebar:
         st.subheader("Inputs")
