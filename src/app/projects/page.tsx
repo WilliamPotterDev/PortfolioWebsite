@@ -99,24 +99,14 @@ export default function ProjectsPage() {
             </div>
 
             <p className="mt-6 max-w-3xl text-sm leading-relaxed tracking-wide text-white/70 sm:text-[15px]">
-              A case study contrasting SK Hynix&apos;s structural AI exposure
-              through high-bandwidth memory with SK Telecom&apos;s
-              sentiment-driven re-rating around its Anthropic stake — silicon
-              versus sentiment in public markets.
+              SK Hynix and SK Telecom have both rallied hard on AI. Only one of
+              them has the earnings to show for it.
+              <br />
+              <br />
+              Case study on the difference between fundamentals-driven and
+              sentiment-driven AI exposure, using SK Group as the natural
+              experiment.
             </p>
-
-            <a
-              href="/projects/sk-group"
-              className="mt-8 block overflow-hidden border border-white/10 bg-black/40"
-            >
-              <Image
-                src="/projects/sk-group-cover.png"
-                alt="Silicon vs. Sentiment: SK Group Case Study cover"
-                width={1600}
-                height={900}
-                className="h-auto w-full object-contain"
-              />
-            </a>
           </article>
         </main>
       </div>
