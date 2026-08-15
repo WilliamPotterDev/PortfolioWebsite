@@ -78,6 +78,46 @@ export default function ProjectsPage() {
               </a>
             </div>
           </article>
+
+          <article className="animate-fade-up-delay mt-20 border-t border-white/10 pt-16">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                  Silicon vs. Sentiment: SK Group Case Study
+                </h2>
+                <p className="mt-3 text-sm tracking-wide text-white/55">
+                  Equity Research · SK Hynix · SK Telecom · AI
+                </p>
+              </div>
+              <a
+                href="/projects/sk-group"
+                className="inline-flex w-fit items-center gap-2 border border-white/25 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-white/90 transition-colors hover:border-white/60 hover:bg-white/5"
+              >
+                Read article
+                <span aria-hidden>→</span>
+              </a>
+            </div>
+
+            <p className="mt-6 max-w-3xl text-sm leading-relaxed tracking-wide text-white/70 sm:text-[15px]">
+              A case study contrasting SK Hynix&apos;s structural AI exposure
+              through high-bandwidth memory with SK Telecom&apos;s
+              sentiment-driven re-rating around its Anthropic stake — silicon
+              versus sentiment in public markets.
+            </p>
+
+            <a
+              href="/projects/sk-group"
+              className="mt-8 block overflow-hidden border border-white/10 bg-black/40"
+            >
+              <Image
+                src="/projects/sk-group-cover.png"
+                alt="Silicon vs. Sentiment: SK Group Case Study cover"
+                width={1600}
+                height={900}
+                className="h-auto w-full object-contain"
+              />
+            </a>
+          </article>
         </main>
       </div>
     </div>
