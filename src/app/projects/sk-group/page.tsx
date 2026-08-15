@@ -1,18 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Libre_Baskerville } from "next/font/google";
 import ParticleNetwork from "@/components/ParticleNetwork";
 import SiteNav from "@/components/SiteNav";
-
-const articleSerif = Libre_Baskerville({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
 
 export const metadata: Metadata = {
   title: "Silicon vs. Sentiment: SK Group Case Study | William Potter",
   description:
-    "A case study on SK Hynix and SK Telecom — structural AI exposure versus sentiment-driven re-rating.",
+    "A case study on SK Hynix and SK Telecom - structural AI exposure versus sentiment-driven re-rating.",
 };
 
 const paragraphs = [
@@ -62,9 +56,7 @@ export default function SkGroupCaseStudyPage() {
             </p>
           </header>
 
-          <article
-            className={`${articleSerif.className} mt-10 space-y-6 text-[15px] leading-8 text-white/80 sm:text-base sm:leading-8`}
-          >
+          <article className="mt-10 space-y-6 font-serif text-[15px] leading-8 text-white/80 sm:text-base sm:leading-8">
             {paragraphs.map((paragraph) => (
               <p key={paragraph.slice(0, 48)}>{paragraph}</p>
             ))}
