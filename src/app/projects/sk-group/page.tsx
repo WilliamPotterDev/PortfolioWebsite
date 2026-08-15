@@ -46,7 +46,7 @@ export default function SkGroupCaseStudyPage() {
 
           <header className="animate-fade-up-delay-2 mt-10">
             <p className="text-[11px] font-medium uppercase tracking-[0.22em] text-white/50">
-              Equity Research · October 2024
+              Equity Research · July 2026
             </p>
             <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
               Silicon vs. Sentiment: SK Group Case Study

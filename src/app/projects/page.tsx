@@ -100,12 +100,9 @@ export default function ProjectsPage() {
 
             <p className="mt-6 max-w-3xl text-sm leading-relaxed tracking-wide text-white/70 sm:text-[15px]">
               SK Hynix and SK Telecom have both rallied hard on AI. Only one of
-              them has the earnings to show for it.
-              <br />
-              <br />
-              Case study on the difference between fundamentals-driven and
-              sentiment-driven AI exposure, using SK Group as the natural
-              experiment.
+              them has the earnings to show for it. Case study on the difference
+              between fundamentals-driven and sentiment-driven AI exposure,
+              using SK Group as the natural experiment.
             </p>
           </article>
         </main>
