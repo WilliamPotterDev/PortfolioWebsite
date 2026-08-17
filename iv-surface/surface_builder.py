@@ -34,15 +34,13 @@ def filter_liquid_contracts(
     min_mid: float = 0.05,
     min_days: float = 2.0,
     max_days: float = 365.0,
+    require_live_quote: bool = True,
 ) -> pd.DataFrame:
     """
     Drop contracts that typically break IV inversion or spike the surface.
 
-    Rules of thumb used by desks for a quick visual surface:
-    - require some volume OR open interest
-    - reject wide bid-ask relative to mid
-    - keep strikes near the money (avoid deep ITM/OTM with stale marks)
-    - skip ultra-short dated (noise) and >1Y if sparse
+    When Yahoo returns empty bid/ask (common on cloud hosts / off-hours),
+    set require_live_quote=False to keep last-trade marks.
     """
     df = chain.loc[chain["option_type"] == option_type].copy()
     if df.empty:
@@ -52,25 +50,35 @@ def filter_liquid_contracts(
     df["moneyness"] = df["strike"] / spot
     df["spread"] = df["ask"] - df["bid"]
     df["spread_pct"] = np.where(df["mid"] > 0, df["spread"] / df["mid"], np.inf)
+    has_live_quote = (df["bid"] > 0) & (df["ask"] > df["bid"])
 
     liquid = (
-        ((df["volume"] >= min_volume) | (df["openInterest"] >= min_open_interest))
-        & (df["mid"] >= min_mid)
-        & (df["bid"] > 0)
-        & (df["ask"] > df["bid"])
-        & (df["spread_pct"] <= max_spread_pct)
+        (df["mid"] >= min_mid)
         & (df["moneyness"] >= min_moneyness)
         & (df["moneyness"] <= max_moneyness)
         & (df["days_to_expiry"] >= min_days)
         & (df["days_to_expiry"] <= max_days)
     )
+
+    # Liquidity: volume OR open interest OR (relaxed) any priced contract near the money.
+    if min_volume > 0 or min_open_interest > 0:
+        liquid &= (df["volume"] >= min_volume) | (df["openInterest"] >= min_open_interest)
+    else:
+        liquid &= (df["volume"] > 0) | (df["openInterest"] > 0) | (df["mid"] >= min_mid)
+
+    if require_live_quote:
+        liquid &= has_live_quote & (df["spread_pct"] <= max_spread_pct)
+    else:
+        # Keep live quotes that pass the spread filter, OR last-trade-only marks.
+        liquid &= (~has_live_quote) | (df["spread_pct"] <= max_spread_pct)
+
     return df.loc[liquid].reset_index(drop=True)
 
 
 def compute_implied_vols(df: pd.DataFrame) -> pd.DataFrame:
-    """Solve IV for each row; skip strikes where brentq fails."""
+    """Solve IV for each row; fall back to Yahoo IV when inversion fails."""
     if df.empty:
-        return df.assign(iv=pd.Series(dtype=float))
+        return df.assign(iv=pd.Series(dtype=float), iv_pct=pd.Series(dtype=float))
 
     ivs: list[float | None] = []
     for row in df.itertuples(index=False):
@@ -82,15 +90,82 @@ def compute_implied_vols(df: pd.DataFrame) -> pd.DataFrame:
             r=float(row.risk_free_rate),
             option_type=row.option_type,  # type: ignore[arg-type]
         )
+        if iv is None and hasattr(row, "impliedVolatility"):
+            yiv = row.impliedVolatility
+            try:
+                yiv_f = float(yiv)
+                # yfinance usually stores IV as a decimal; ignore junk.
+                if 0.01 <= yiv_f <= 2.5:
+                    iv = yiv_f
+            except (TypeError, ValueError):
+                pass
         ivs.append(iv)
 
     out = df.copy()
     out["iv"] = ivs
     out = out.dropna(subset=["iv"])
-    # Sanity band: discard absurd inversions that slipped past filters.
     out = out.loc[(out["iv"] >= 0.01) & (out["iv"] <= 2.5)].reset_index(drop=True)
     out["iv_pct"] = out["iv"] * 100.0
     return out
+
+
+def build_iv_surface(
+    chain: pd.DataFrame,
+    option_type: OptionType = "call",
+    **filter_kwargs: Any,
+) -> dict[str, Any]:
+    """End-to-end: filter → invert IV → grid → skew diagnostics.
+
+    Automatically relaxes quote / liquidity requirements when Yahoo returns
+    sparse bid-ask data (typical on Streamlit Cloud).
+    """
+    attempts = [
+        dict(filter_kwargs),
+        {**filter_kwargs, "require_live_quote": False},
+        {
+            **filter_kwargs,
+            "require_live_quote": False,
+            "min_volume": 0,
+            "min_open_interest": 0,
+            "max_spread_pct": max(float(filter_kwargs.get("max_spread_pct", 0.35)), 0.8),
+            "min_mid": 0.01,
+            "min_days": 1.0,
+        },
+    ]
+
+    iv_df = pd.DataFrame()
+    last_liquid = 0
+    for kwargs in attempts:
+        # Default require_live_quote True unless overridden.
+        kwargs.setdefault("require_live_quote", True)
+        liquid = filter_liquid_contracts(chain, option_type, **kwargs)
+        last_liquid = len(liquid)
+        iv_df = compute_implied_vols(liquid)
+        if not iv_df.empty:
+            break
+
+    if iv_df.empty:
+        n_type = int((chain["option_type"] == option_type).sum()) if not chain.empty else 0
+        raise ValueError(
+            f"No valid {option_type} IVs after filtering / inversion "
+            f"({n_type} raw {option_type}s, {last_liquid} after filters). "
+            "Yahoo quotes are often empty on cloud hosts — try again, widen "
+            "moneyness, or set min volume to 0."
+        )
+
+    spot = float(iv_df["spot"].iloc[0])
+    grid = build_surface_grid(iv_df)
+    skew = analyze_skew(iv_df, spot)
+    expiries = sorted(iv_df["expiry"].unique().tolist())
+
+    return {
+        "option_type": option_type,
+        "spot": spot,
+        "iv_df": iv_df,
+        "grid": grid,
+        "skew": skew,
+        "expiries": expiries,
+    }
 
 
 def build_surface_grid(
@@ -276,32 +351,6 @@ def analyze_skew(iv_df: pd.DataFrame, spot: float) -> dict[str, Any]:
         "call_wing_iv": call_iv,
         "atm_iv": atm_iv,
         "skew_pp": skew_pp,
-    }
-
-
-def build_iv_surface(
-    chain: pd.DataFrame,
-    option_type: OptionType = "call",
-    **filter_kwargs: Any,
-) -> dict[str, Any]:
-    """End-to-end: filter → invert IV → grid → skew diagnostics."""
-    liquid = filter_liquid_contracts(chain, option_type, **filter_kwargs)
-    iv_df = compute_implied_vols(liquid)
-    if iv_df.empty:
-        raise ValueError(f"No valid {option_type} IVs after filtering / inversion.")
-
-    spot = float(iv_df["spot"].iloc[0])
-    grid = build_surface_grid(iv_df)
-    skew = analyze_skew(iv_df, spot)
-    expiries = sorted(iv_df["expiry"].unique().tolist())
-
-    return {
-        "option_type": option_type,
-        "spot": spot,
-        "iv_df": iv_df,
-        "grid": grid,
-        "skew": skew,
-        "expiries": expiries,
     }
 
 

@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 import pandas as pd
+import numpy as np
 import yfinance as yf
 
 # Fallback if ^IRX is unavailable (approx. recent 3M T-bill level).
@@ -85,6 +86,10 @@ def _normalize_chain(df: pd.DataFrame, option_type: str, expiry: str) -> pd.Data
     out["volume"] = pd.to_numeric(out.get("volume"), errors="coerce").fillna(0).astype(int)
     out["openInterest"] = pd.to_numeric(out.get("openInterest"), errors="coerce").fillna(0).astype(int)
     out["strike"] = pd.to_numeric(out.get("strike"), errors="coerce")
+    if "impliedVolatility" in out.columns:
+        out["impliedVolatility"] = pd.to_numeric(out["impliedVolatility"], errors="coerce")
+    else:
+        out["impliedVolatility"] = np.nan
 
     keep = [
         "contractSymbol",

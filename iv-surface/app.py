@@ -477,7 +477,7 @@ def main() -> None:
         ticker = st.text_input("Ticker", value="SPY").strip().upper()
         option_type = st.radio("Type", options=["call", "put"], horizontal=True)
         st.subheader("Filters")
-        min_volume = st.number_input("Min volume or OI", min_value=0, value=1, step=1)
+        min_volume = st.number_input("Min volume or OI", min_value=0, value=0, step=1)
         max_spread = st.slider("Max bid-ask / mid", 0.05, 0.80, 0.35, 0.05)
         moneyness = st.slider("Moneyness band", 0.50, 1.50, (0.70, 1.30), 0.05)
         run = st.button("Update", use_container_width=True)
