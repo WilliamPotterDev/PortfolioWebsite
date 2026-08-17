@@ -478,8 +478,8 @@ def main() -> None:
         option_type = st.radio("Type", options=["call", "put"], horizontal=True)
         st.subheader("Filters")
         min_volume = st.number_input("Min volume or OI", min_value=0, value=0, step=1)
-        max_spread = st.slider("Max bid-ask / mid", 0.05, 0.80, 0.35, 0.05)
-        moneyness = st.slider("Moneyness band", 0.50, 1.50, (0.70, 1.30), 0.05)
+        max_spread = st.slider("Max bid-ask / mid", 0.05, 0.90, 0.50, 0.05)
+        moneyness = st.slider("Moneyness band", 0.50, 1.50, (0.80, 1.20), 0.05)
         run = st.button("Update", use_container_width=True)
 
     if not ticker:
@@ -552,10 +552,10 @@ def main() -> None:
 
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Spot", f"{raw['spot']:.2f}")
-    c2.metric("Risk-free (3M)", f"{raw['risk_free_rate']:.2%}")
-    c3.metric("IV points", f"{len(iv_df):,}")
+    c2.metric("Risk-free 3M (%)", f"{raw['risk_free_rate'] * 100:.2f}")
+    c3.metric("IV points", f"{len(iv_df)}")
     atm = skew.get("atm_iv")
-    c4.metric("ATM IV", f"{atm:.1f}%" if atm is not None else "n/a")
+    c4.metric("ATM IV (%)", f"{atm:.1f}" if atm is not None else "n/a")
 
     with st.container(border=True):
         st.plotly_chart(
@@ -566,8 +566,9 @@ def main() -> None:
     st.markdown("##### Smile by expiry")
     expiries = surface["expiries"]
     default_idx = 0
-    if skew.get("expiry_used") in expiries:
-        default_idx = expiries.index(skew["expiry_used"])
+    preferred = surface.get("smile_expiry") or skew.get("expiry_used")
+    if preferred in expiries:
+        default_idx = expiries.index(preferred)
     expiry = st.selectbox("Expiry", options=expiries, index=default_idx)
     smile = smile_for_expiry(iv_df, expiry)
     if smile.empty:

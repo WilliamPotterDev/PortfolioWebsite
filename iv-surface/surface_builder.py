@@ -7,6 +7,7 @@ structures the remaining points for Plotly surface / smile charts.
 
 from __future__ import annotations
 
+import math
 from typing import Any, Literal
 
 import numpy as np
@@ -22,25 +23,38 @@ def _moneyness(strike: float, spot: float) -> float:
     return strike / spot if spot > 0 else np.nan
 
 
+def _yahoo_iv(value: Any) -> float | None:
+    try:
+        yiv = float(value)
+    except (TypeError, ValueError):
+        return None
+    # yfinance is usually a decimal; occasionally a percent.
+    if yiv > 3.0:  # e.g. 25.0 meaning 25%
+        yiv /= 100.0
+    if 0.03 <= yiv <= 1.50:
+        return yiv
+    return None
+
+
 def filter_liquid_contracts(
     chain: pd.DataFrame,
     option_type: OptionType,
     *,
-    min_volume: int = 1,
-    min_open_interest: int = 1,
-    max_spread_pct: float = 0.35,
+    min_volume: int = 0,
+    min_open_interest: int = 0,
+    max_spread_pct: float = 0.50,
     min_moneyness: float = 0.70,
     max_moneyness: float = 1.30,
     min_mid: float = 0.05,
-    min_days: float = 2.0,
-    max_days: float = 365.0,
-    require_live_quote: bool = True,
+    min_days: float = 5.0,
+    max_days: float = 180.0,
+    require_live_quote: bool = False,
+    allow_yahoo_iv_only: bool = True,
 ) -> pd.DataFrame:
     """
-    Drop contracts that typically break IV inversion or spike the surface.
+    Keep near-money contracts that either have a usable mark or a Yahoo IV.
 
-    When Yahoo returns empty bid/ask (common on cloud hosts / off-hours),
-    set require_live_quote=False to keep last-trade marks.
+    Defaults are cloud-friendly: Yahoo often returns empty bid/ask on Streamlit Cloud.
     """
     df = chain.loc[chain["option_type"] == option_type].copy()
     if df.empty:
@@ -51,62 +65,110 @@ def filter_liquid_contracts(
     df["spread"] = df["ask"] - df["bid"]
     df["spread_pct"] = np.where(df["mid"] > 0, df["spread"] / df["mid"], np.inf)
     has_live_quote = (df["bid"] > 0) & (df["ask"] > df["bid"])
+    if "impliedVolatility" in df.columns:
+        yiv = df["impliedVolatility"].map(_yahoo_iv)
+        df["_yiv"] = yiv
+        has_yiv = yiv.notna()
+    else:
+        df["_yiv"] = np.nan
+        has_yiv = pd.Series(False, index=df.index)
+
+    has_mark = df["mid"] >= min_mid
 
     liquid = (
-        (df["mid"] >= min_mid)
-        & (df["moneyness"] >= min_moneyness)
+        (df["moneyness"] >= min_moneyness)
         & (df["moneyness"] <= max_moneyness)
         & (df["days_to_expiry"] >= min_days)
         & (df["days_to_expiry"] <= max_days)
+        & (has_mark | (allow_yahoo_iv_only & has_yiv))
     )
 
-    # Liquidity: volume OR open interest OR (relaxed) any priced contract near the money.
     if min_volume > 0 or min_open_interest > 0:
         liquid &= (df["volume"] >= min_volume) | (df["openInterest"] >= min_open_interest)
-    else:
-        liquid &= (df["volume"] > 0) | (df["openInterest"] > 0) | (df["mid"] >= min_mid)
 
     if require_live_quote:
         liquid &= has_live_quote & (df["spread_pct"] <= max_spread_pct)
     else:
-        # Keep live quotes that pass the spread filter, OR last-trade-only marks.
+        # If a live quote exists, enforce spread; marks/Yahoo-only rows stay.
         liquid &= (~has_live_quote) | (df["spread_pct"] <= max_spread_pct)
 
     return df.loc[liquid].reset_index(drop=True)
 
 
 def compute_implied_vols(df: pd.DataFrame) -> pd.DataFrame:
-    """Solve IV for each row; fall back to Yahoo IV when inversion fails."""
+    """
+    Invert BS when the mark has meaningful time value; otherwise use Yahoo IV.
+
+    Deep ITM options priced near intrinsic produce nonsense IVs and wreck the smile.
+    """
     if df.empty:
         return df.assign(iv=pd.Series(dtype=float), iv_pct=pd.Series(dtype=float))
 
     ivs: list[float | None] = []
     for row in df.itertuples(index=False):
-        iv = implied_volatility(
-            market_price=float(row.mid),
-            S=float(row.spot),
-            K=float(row.strike),
-            T=float(row.time_to_expiry),
-            r=float(row.risk_free_rate),
-            option_type=row.option_type,  # type: ignore[arg-type]
-        )
-        if iv is None and hasattr(row, "impliedVolatility"):
-            yiv = row.impliedVolatility
-            try:
-                yiv_f = float(yiv)
-                # yfinance usually stores IV as a decimal; ignore junk.
-                if 0.01 <= yiv_f <= 2.5:
-                    iv = yiv_f
-            except (TypeError, ValueError):
-                pass
+        S = float(row.spot)
+        K = float(row.strike)
+        T = float(row.time_to_expiry)
+        r = float(row.risk_free_rate)
+        mid = float(row.mid)
+        opt = row.option_type
+        yiv = _yahoo_iv(getattr(row, "impliedVolatility", None))
+
+        iv: float | None = None
+        discounted_k = K * math.exp(-r * T)
+        if opt == "call":
+            intrinsic = max(S - discounted_k, 0.0)
+        else:
+            intrinsic = max(discounted_k - S, 0.0)
+
+        # Only invert when there is clear time value above intrinsic.
+        time_value = mid - intrinsic
+        if mid > 0 and time_value > max(0.05, 0.02 * mid):
+            iv = implied_volatility(mid, S, K, T, r, opt)  # type: ignore[arg-type]
+
+        if iv is None:
+            iv = yiv
+
+        # Reject deep-ITM inversions that still look like junk vs Yahoo.
+        if iv is not None and yiv is not None and abs(iv - yiv) > 0.50:
+            # Prefer Yahoo when our solve disagrees wildly (stale ITM marks).
+            m = K / S
+            deep = (opt == "call" and m < 0.92) or (opt == "put" and m > 1.08)
+            if deep:
+                iv = yiv
+
         ivs.append(iv)
 
     out = df.copy()
     out["iv"] = ivs
     out = out.dropna(subset=["iv"])
-    out = out.loc[(out["iv"] >= 0.01) & (out["iv"] <= 2.5)].reset_index(drop=True)
+    out = out.loc[(out["iv"] >= 0.04) & (out["iv"] <= 1.20)].reset_index(drop=True)
     out["iv_pct"] = out["iv"] * 100.0
     return out
+
+
+def best_smile_expiry(iv_df: pd.DataFrame, spot: float) -> str:
+    """Pick the expiry with the best strike coverage around spot (true smile)."""
+    best_exp = str(iv_df["expiry"].iloc[0])
+    best_score = -1e18
+    for expiry, frame in iv_df.groupby("expiry"):
+        if len(frame) < 4:
+            continue
+        m = frame["strike"] / spot
+        n = len(frame)
+        span = float(m.max() - m.min()) if n else 0.0
+        atm_dist = float((m - 1.0).abs().min())
+        has_left = bool((m < 0.98).any())
+        has_right = bool((m > 1.02).any())
+        wing_bonus = 5.0 * (int(has_left) + int(has_right))
+        # Prefer ~2w–3m tenors with wings around ATM.
+        days = float(frame["days_to_expiry"].iloc[0])
+        tenor_score = -abs(days - 45.0) / 45.0
+        score = wing_bonus + span * 10.0 + n * 0.15 - atm_dist * 20.0 + tenor_score
+        if score > best_score:
+            best_score = score
+            best_exp = str(expiry)
+    return best_exp
 
 
 def build_iv_surface(
@@ -114,49 +176,60 @@ def build_iv_surface(
     option_type: OptionType = "call",
     **filter_kwargs: Any,
 ) -> dict[str, Any]:
-    """End-to-end: filter → invert IV → grid → skew diagnostics.
-
-    Automatically relaxes quote / liquidity requirements when Yahoo returns
-    sparse bid-ask data (typical on Streamlit Cloud).
-    """
+    """End-to-end: filter → invert IV → grid → skew diagnostics."""
     attempts = [
-        dict(filter_kwargs),
-        {**filter_kwargs, "require_live_quote": False},
+        {**filter_kwargs, "require_live_quote": False, "allow_yahoo_iv_only": True},
         {
             **filter_kwargs,
             "require_live_quote": False,
+            "allow_yahoo_iv_only": True,
             "min_volume": 0,
             "min_open_interest": 0,
-            "max_spread_pct": max(float(filter_kwargs.get("max_spread_pct", 0.35)), 0.8),
+            "max_spread_pct": 0.9,
             "min_mid": 0.01,
-            "min_days": 1.0,
+            "min_days": 3.0,
+            "max_days": 365.0,
+        },
+        {
+            **filter_kwargs,
+            "require_live_quote": False,
+            "allow_yahoo_iv_only": True,
+            "min_volume": 0,
+            "min_open_interest": 0,
+            "min_mid": 0.0,
+            "min_days": 2.0,
+            "max_days": 400.0,
+            "min_moneyness": min(float(filter_kwargs.get("min_moneyness", 0.7)), 0.75),
+            "max_moneyness": max(float(filter_kwargs.get("max_moneyness", 1.3)), 1.25),
         },
     ]
 
     iv_df = pd.DataFrame()
     last_liquid = 0
     for kwargs in attempts:
-        # Default require_live_quote True unless overridden.
-        kwargs.setdefault("require_live_quote", True)
         liquid = filter_liquid_contracts(chain, option_type, **kwargs)
         last_liquid = len(liquid)
         iv_df = compute_implied_vols(liquid)
-        if not iv_df.empty:
-            break
+        # Need enough points AND some strike span to look like a surface/smile.
+        if len(iv_df) >= 15:
+            span = float(iv_df["strike"].max() - iv_df["strike"].min())
+            spot = float(iv_df["spot"].iloc[0])
+            if span / spot >= 0.08:
+                break
 
-    if iv_df.empty:
+    if iv_df.empty or len(iv_df) < 8:
         n_type = int((chain["option_type"] == option_type).sum()) if not chain.empty else 0
         raise ValueError(
             f"No valid {option_type} IVs after filtering / inversion "
             f"({n_type} raw {option_type}s, {last_liquid} after filters). "
-            "Yahoo quotes are often empty on cloud hosts — try again, widen "
-            "moneyness, or set min volume to 0."
+            "Yahoo quotes are often empty on cloud hosts — click Update again or widen moneyness."
         )
 
     spot = float(iv_df["spot"].iloc[0])
     grid = build_surface_grid(iv_df)
     skew = analyze_skew(iv_df, spot)
     expiries = sorted(iv_df["expiry"].unique().tolist())
+    smile_expiry = best_smile_expiry(iv_df, spot)
 
     return {
         "option_type": option_type,
@@ -165,6 +238,7 @@ def build_iv_surface(
         "grid": grid,
         "skew": skew,
         "expiries": expiries,
+        "smile_expiry": smile_expiry,
     }
 
 
@@ -190,23 +264,25 @@ def build_surface_grid(
     days = iv_df["days_to_expiry"].to_numpy(dtype=float)
     iv_pct = iv_df["iv_pct"].to_numpy(dtype=float)
 
+    # Winsorize extreme IVs so a few junk points don't dominate the mesh.
+    lo, hi = np.nanpercentile(iv_pct, [5, 95])
+    if hi <= lo:
+        lo, hi = float(np.nanmin(iv_pct)), float(np.nanmax(iv_pct))
+    iv_pct = np.clip(iv_pct, lo, hi)
+
     strike_grid = np.linspace(strikes.min(), strikes.max(), n_strike)
     day_grid = np.linspace(days.min(), days.max(), n_expiry)
     strike_mesh, day_mesh = np.meshgrid(strike_grid, day_grid)
     pts = np.column_stack([strikes, days])
 
-    # Keep the full liquid IV range on the colorbar / z-axis (no percentile cap).
-    iv_mesh = griddata(pts, iv_pct, xi=(strike_mesh, day_mesh), method="cubic")
+    iv_mesh = griddata(pts, iv_pct, xi=(strike_mesh, day_mesh), method="linear")
     if iv_mesh is None or np.isnan(iv_mesh).all():
-        iv_mesh = griddata(pts, iv_pct, xi=(strike_mesh, day_mesh), method="linear")
+        iv_mesh = griddata(pts, iv_pct, xi=(strike_mesh, day_mesh), method="nearest")
 
-    linear = griddata(pts, iv_pct, xi=(strike_mesh, day_mesh), method="linear")
     nearest = griddata(pts, iv_pct, xi=(strike_mesh, day_mesh), method="nearest")
-    iv_mesh = np.where(np.isnan(iv_mesh), linear, iv_mesh)
     iv_mesh = np.where(np.isnan(iv_mesh), nearest, iv_mesh)
-
-    # Mild smooth for detail without faceting — matte sheet, not polished metal.
-    iv_mesh = gaussian_filter(iv_mesh.astype(float), sigma=0.7, mode="nearest")
+    iv_mesh = gaussian_filter(iv_mesh.astype(float), sigma=1.0, mode="nearest")
+    iv_mesh = np.clip(iv_mesh, lo, hi)
 
     return {
         "strike_mesh": strike_mesh,
