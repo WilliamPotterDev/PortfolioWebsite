@@ -1,7 +1,7 @@
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "Projects", href: "/projects" },
-  { label: "CV", href: "#cv" },
+  { label: "CV", href: "/cv" },
 ];
 
 export default function SiteNav() {

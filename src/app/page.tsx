@@ -62,7 +62,7 @@ export default function Home() {
             William Potter
           </h1>
           <p className="animate-fade-up-delay mt-4 text-base font-light tracking-wide text-white/85 sm:text-lg">
-            Finance BSc student at Durham · Python · C++ · Financial Modelling
+            Finance BSc student at Durham · Python · Equity Research · Financial Modelling
           </p>
 
           <div className="animate-fade-up-delay-2 mt-10 flex items-center gap-7">
