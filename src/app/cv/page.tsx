@@ -66,7 +66,7 @@ export default function CvPage() {
                 William Potter
               </h1>
               <p className="mt-3 text-sm tracking-wide text-white/60">
-                Finance BSc · Durham University · Equity Research &amp; Markets
+                Finance BSc (Hons) · Durham University
               </p>
             </div>
             <a
@@ -82,10 +82,10 @@ export default function CvPage() {
 
           <div className="animate-fade-up-delay mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[12px] tracking-wide text-white/55">
             <a
-              href="mailto:williamgpotter@outlook.com"
+              href="mailto:william.g.potter@durham.ac.uk"
               className="transition-opacity hover:text-white"
             >
-              williamgpotter@outlook.com
+              william.g.potter@durham.ac.uk
             </a>
             <span className="text-white/25">·</span>
             <a
@@ -98,7 +98,7 @@ export default function CvPage() {
             </a>
             <span className="text-white/25">·</span>
             <a href="tel:+447484119738" className="transition-opacity hover:text-white">
-              +44 07484 119738
+              +44 7484 119738
             </a>
           </div>
 
@@ -110,7 +110,7 @@ export default function CvPage() {
                 <RoleHeader
                   org="Durham University"
                   location="Durham"
-                  title="BSc Finance"
+                  title="BSc Finance (Hons)"
                   dates="09/2026 – 06/2029"
                 />
               </div>
@@ -118,10 +118,17 @@ export default function CvPage() {
               <div>
                 <RoleHeader
                   org="Holy Cross College"
-                  location="Bury, Greater Manchester"
-                  title="A-levels: Mathematics (A), Computer Science (B), Physics (C)"
+                  location="Bury, Manchester"
+                  title="A-Levels: Mathematics (A), Computer Science (B), Physics (C)"
                   dates="09/2024 – 06/2026"
                 />
+                <ul className="mt-3 space-y-1.5 text-[13px] leading-relaxed text-white/65">
+                  <li className="pl-4 before:mr-2 before:content-['–']">
+                    Built a recruitment system in VBA, Access and SQL, with
+                    dashboards that tracked candidates, employers and
+                    consultants, as computer science coursework.
+                  </li>
+                </ul>
               </div>
 
               <div>
@@ -133,11 +140,12 @@ export default function CvPage() {
                 />
                 <ul className="mt-3 space-y-1.5 text-[13px] leading-relaxed text-white/65">
                   <li className="pl-4 before:mr-2 before:content-['–']">
-                    Tri-weekly extra &amp; super-curricular STEM problem-solving
-                    and tutoring sessions.
+                    Worked through STEM problems three times a week and
+                    explained the solutions in tutoring sessions.
                   </li>
                   <li className="pl-4 before:mr-2 before:content-['–']">
-                    Cambridge University summer school and lecture sessions.
+                    Attended the Cambridge STEM SMART summer school and
+                    lectures.
                   </li>
                 </ul>
               </div>
@@ -145,27 +153,29 @@ export default function CvPage() {
           </section>
 
           <section className="mt-12 space-y-6">
-            <SectionTitle>Relevant Experience</SectionTitle>
+            <SectionTitle>Experience</SectionTitle>
 
             <div className="space-y-8">
               <div>
                 <RoleHeader
                   org="The Derby High School"
-                  location="Bury, Greater Manchester"
-                  title="Mathematics Mentor / Tutor"
+                  location="Bury, Manchester"
+                  title="Mathematics Mentor &amp; Tutor"
                   dates="11/2024 – 05/2025"
                 />
                 <ul className="mt-3 space-y-1.5 text-[13px] leading-relaxed text-white/65">
                   <li className="pl-4 before:mr-2 before:content-['–']">
-                    Partnered with The Derby High School to provide weekly GCSE
-                    maths mentoring after college.
+                    Mentored GCSE maths pupils every week after college,
+                    one-to-one and in groups of up to 12, focusing on the
+                    topics that blocked grades 8 and 9.
                   </li>
                   <li className="pl-4 before:mr-2 before:content-['–']">
-                    Delivered 1-to-1 and group sessions of up to 12 pupils.
+                    Found where each pupil was stuck, then explained the next
+                    step in plain language.
                   </li>
                   <li className="pl-4 before:mr-2 before:content-['–']">
-                    Focused on difficult concepts that typically hold students
-                    back from grades 8 and 9.
+                    Kept several pupils moving in the same hour and decided who
+                    needed the time first.
                   </li>
                 </ul>
               </div>
@@ -173,43 +183,43 @@ export default function CvPage() {
               <div>
                 <RoleHeader
                   org="TechMates"
-                  location="Wigan, Greater Manchester"
+                  location="Bury, Manchester"
                   title="Technical Help Assistant"
-                  dates="08/2024 – 02/2025"
+                  dates="11/2024 – 05/2025"
                 />
                 <ul className="mt-3 space-y-1.5 text-[13px] leading-relaxed text-white/65">
                   <li className="pl-4 before:mr-2 before:content-['–']">
-                    Taught and assisted in group and 1-to-1 sessions on using
-                    technology to improve personal and business outcomes.
+                    Taught group and one-to-one sessions on software for
+                    everyday tasks and small businesses, and wrote a separate
+                    plan so each person could carry on without help.
                   </li>
                   <li className="pl-4 before:mr-2 before:content-['–']">
-                    Created personalised learning plans for independent software
-                    use.
+                    Turned problems that kept coming up into short written
+                    guides.
                   </li>
                   <li className="pl-4 before:mr-2 before:content-['–']">
-                    Collaborated with a team to develop simple guides for common
-                    technical problems.
+                    Checked the steps with the team before a guide was handed
+                    out.
                   </li>
                 </ul>
               </div>
 
               <div>
                 <RoleHeader
-                  org="Government Dept. for Science, Innovation and Technology"
-                  location="Salford, Greater Manchester"
+                  org="Government Department for Science, Innovation, and Technology"
+                  location="Salford, Manchester"
                   title="Work Experience"
                   dates="06/2024 – 07/2024"
                 />
                 <ul className="mt-3 space-y-1.5 text-[13px] leading-relaxed text-white/65">
                   <li className="pl-4 before:mr-2 before:content-['–']">
-                    Attended briefings and meetings, building a core
-                    understanding of government procedures including tender
-                    processes, procurement planning, and public-private
-                    partnerships.
+                    Attended briefings on tendering, procurement planning and
+                    public-private partnerships, and kept notes on the process.
                   </li>
                   <li className="pl-4 before:mr-2 before:content-['–']">
-                    Provided insights into the implementation plan for the
-                    National Underground Asset Register (NUAR).
+                    Followed the implementation plan for the National
+                    Underground Asset Register and raised points from those
+                    briefings.
                   </li>
                 </ul>
               </div>
@@ -235,11 +245,9 @@ export default function CvPage() {
                   </a>
                 </div>
                 <p className="mt-2 text-[13px] leading-relaxed text-white/65">
-                  Developed a risk-valuation tool in Python that ingests live
-                  options and underlying prices via API, numerically inverts
-                  Black-Scholes to solve for implied volatility, and applies
-                  liquidity filters to construct a volatility surface for risk
-                  assessment.
+                  Built a Python tool that takes live option and share prices,
+                  drops illiquid prices, and solves for implied volatility from
+                  data that can be checked.
                 </p>
               </div>
 
@@ -256,10 +264,9 @@ export default function CvPage() {
                   </a>
                 </div>
                 <p className="mt-2 text-[13px] leading-relaxed text-white/65">
-                  Independent equity research contrasting SK Hynix&apos;s
-                  semiconductor fundamentals with SK Telecom&apos;s
-                  sentiment-driven AI re-rating; built the financial analysis and
-                  valuation narrative.
+                  Set SK Hynix&apos;s semiconductor results next to SK
+                  Telecom&apos;s market position, with the figures and the
+                  valuation in one document.
                 </p>
               </div>
             </div>
@@ -269,14 +276,11 @@ export default function CvPage() {
             <SectionTitle>Awards &amp; Certifications</SectionTitle>
             <ul className="space-y-2 text-[13px] leading-relaxed text-white/65">
               <li className="pl-4 before:mr-2 before:content-['–']">
-                UKMT Senior Mathematics Challenge 2024 and 2025 — Silver Award
-                in both years
+                UKMT Senior Mathematics Challenge 2024 and 2025 — Silver Awards
+                in Both
               </li>
               <li className="pl-4 before:mr-2 before:content-['–']">
-                IBM — Data Science Tools
-              </li>
-              <li className="pl-4 before:mr-2 before:content-['–']">
-                IBM — Data Science in Practice
+                IBM: Data Science Tools, Data Science in Practice
               </li>
               <li className="pl-4 before:mr-2 before:content-['–']">
                 KPMG U.S. — Career Catalyst: Advisory
@@ -290,7 +294,7 @@ export default function CvPage() {
           <section className="mt-12 space-y-6">
             <SectionTitle>Technical Skills</SectionTitle>
             <p className="text-[13px] leading-relaxed tracking-wide text-white/70">
-              Excel (Advanced) · Python · SQL · VBA · C++
+              Excel (Advanced) · VBA · SQL · Python · C++ (Basic)
             </p>
           </section>
         </main>

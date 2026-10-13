@@ -10,7 +10,7 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: "William Potter",
-  description: "Portfolio of William Potter — finance, Python, and C++.",
+  description: "Portfolio of William Potter — finance, Python, and Excel.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
