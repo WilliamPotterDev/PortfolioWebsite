@@ -128,6 +128,19 @@ export default function ProjectsPage() {
               between fundamentals-driven and sentiment-driven AI exposure,
               using SK Group as the natural experiment.
             </p>
+
+            <a
+              href="/projects/sk-group"
+              className="mt-8 block overflow-hidden border border-white/10 bg-black/40"
+            >
+              <Image
+                src="/projects/sk-group-cover.png"
+                alt="Silicon vs. Sentiment: SK Group Case Study cover"
+                width={1600}
+                height={900}
+                className="h-auto w-full object-contain"
+              />
+            </a>
           </article>
         </main>
       </div>
