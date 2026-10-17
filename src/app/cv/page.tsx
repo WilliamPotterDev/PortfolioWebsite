@@ -269,6 +269,43 @@ export default function CvPage() {
                   valuation in one document.
                 </p>
               </div>
+
+              <div>
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                  <h3 className="text-[15px] font-semibold tracking-tight text-white">
+                    Equity Beta Estimation
+                  </h3>
+                  <a
+                    href="/projects/market-betas"
+                    className="text-[12px] tracking-wide text-white/50 transition-opacity hover:text-white"
+                  >
+                    View →
+                  </a>
+                </div>
+                <p className="mt-2 text-[13px] leading-relaxed text-white/65">
+                  Estimated equity betas for Apple, Nvidia, Broadcom, Microsoft
+                  and Oracle from CRSP daily returns against the value-weighted
+                  market.
+                </p>
+              </div>
+
+              <div>
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+                  <h3 className="text-[15px] font-semibold tracking-tight text-white">
+                    Loan Book Diversification
+                  </h3>
+                  <a
+                    href="/projects/loan-book"
+                    className="text-[12px] tracking-wide text-white/50 transition-opacity hover:text-white"
+                  >
+                    View →
+                  </a>
+                </div>
+                <p className="mt-2 text-[13px] leading-relaxed text-white/65">
+                  Monte Carlo simulation of loan defaults showing how larger
+                  books keep the same average loss but cut bad-year tail risk.
+                </p>
+              </div>
             </div>
           </section>
 
