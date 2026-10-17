@@ -25,24 +25,15 @@ export default function ProjectsPage() {
                   Python · Options · Black-Scholes · Plotly
                 </p>
               </div>
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href="#iv-demo"
-                  className="inline-flex w-fit items-center gap-2 border border-white/25 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-white/90 transition-colors hover:border-white/60 hover:bg-white/5"
-                >
-                  Watch demo
-                  <span aria-hidden>↓</span>
-                </a>
-                <a
-                  href="https://iv-surface-project.streamlit.app/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-fit items-center gap-2 border border-white/15 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-white/70 transition-colors hover:border-white/40 hover:text-white/90"
-                >
-                  Open app
-                  <span aria-hidden>→</span>
-                </a>
-              </div>
+              <a
+                href="https://iv-surface-project.streamlit.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-fit items-center gap-2 border border-white/25 px-4 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-white/90 transition-colors hover:border-white/60 hover:bg-white/5"
+              >
+                Open app
+                <span aria-hidden>→</span>
+              </a>
             </div>
 
             <p className="mt-6 max-w-3xl text-sm leading-relaxed tracking-wide text-white/70 sm:text-[15px]">
@@ -54,22 +45,7 @@ export default function ProjectsPage() {
               used to form a clearer read on market risk.
             </p>
 
-            <div
-              id="iv-demo"
-              className="mt-8 overflow-hidden border border-white/10 bg-black/40"
-            >
-              {/* Animated GIF: keep unoptimized so frames are not flattened */}
-              <img
-                src="/projects/iv-surface-demo.gif"
-                alt="Implied volatility surface demo walkthrough"
-                className="h-auto w-full"
-              />
-            </div>
-            <p className="mt-2 text-[11px] tracking-wide text-white/40">
-              Instant demo · live app may take ~30s to wake on first open
-            </p>
-
-            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <a
                 href="https://iv-surface-project.streamlit.app/"
                 target="_blank"
